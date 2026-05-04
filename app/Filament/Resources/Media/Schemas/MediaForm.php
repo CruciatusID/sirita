@@ -2,10 +2,14 @@
 
 namespace App\Filament\Resources\Media\Schemas;
 
+use App\Filament\Support\StoredFileName;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class MediaForm
 {
@@ -14,22 +18,43 @@ class MediaForm
         return $schema
             ->components([
                 TextInput::make('filename')
-                    ->label('Nama File')
-                    ->required()
+                    ->label('Nama Tampilan')
+                    ->helperText('Opsional. Jika dikosongkan, sistem memakai nama file.')
                     ->maxLength(255),
                 FileUpload::make('path')
                     ->label('File')
+                    ->disk('public')
                     ->directory('media')
+                    ->getUploadedFileNameForStorageUsing(
+                        fn (TemporaryUploadedFile $file): string => StoredFileName::uniqueFromUpload($file, 'media'),
+                    )
                     ->required(),
-                TextInput::make('mime_type')
+                Placeholder::make('mime_type_preview')
                     ->label('MIME Type')
-                    ->maxLength(255),
-                TextInput::make('size')
+                    ->content(fn (Get $get): string => self::fileMimeType($get('path')) ?? '-'),
+                Placeholder::make('size_preview')
                     ->label('Ukuran')
-                    ->numeric()
-                    ->default(0),
-                Hidden::make('uploaded_by')
-                    ->default(fn () => auth()->id()),
+                    ->content(fn (Get $get): string => self::fileSize($get('path')) ?? '-'),
             ]);
+    }
+
+    protected static function fileMimeType(?string $path): ?string
+    {
+        if (blank($path) || (! Storage::disk('public')->exists($path))) {
+            return null;
+        }
+
+        return Storage::disk('public')->mimeType($path);
+    }
+
+    protected static function fileSize(?string $path): ?string
+    {
+        if (blank($path) || (! Storage::disk('public')->exists($path))) {
+            return null;
+        }
+
+        $bytes = Storage::disk('public')->size($path);
+
+        return number_format($bytes / 1024, 1).' KB';
     }
 }

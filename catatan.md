@@ -2,25 +2,25 @@
 
 ## Status Saat Ini
 
-SIRITA sudah dibuat sebagai proyek Laravel 13 dengan admin panel Filament dan database offline SQLite.
+SIRITA sudah dibuat sebagai proyek Laravel 13 dengan admin panel Filament dan database MySQL lokal via Herd/phpMyAdmin.
 
 Stack awal:
 
 - Laravel 13.7
 - PHP 8.3+ (lokal saat ini PHP 8.4)
-- SQLite offline untuk development
+- MySQL lokal untuk development
 - Filament 5.6 untuk admin panel
 - Blade + Tailwind CSS untuk frontend
 - Spatie Permission untuk role
 - Spatie Activity Log, Sitemap, Backup, Sluggable, Image Optimizer
 - Artesaos SEO Tools
 
-## Database Offline
+## Database Development
 
-Database development menggunakan SQLite:
+Database development menggunakan MySQL:
 
 ```text
-database/database.sqlite
+Database: kemenagt_sirita
 ```
 
 Konfigurasi ada di:
@@ -33,15 +33,25 @@ Konfigurasi ada di:
 Nilai penting:
 
 ```env
-DB_CONNECTION=sqlite
-DB_DATABASE=database/database.sqlite
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=kemenagt_sirita
+DB_USERNAME=root
+DB_PASSWORD=
 FILESYSTEM_DISK=public
 ```
 
-Jika proyek dipindahkan dan file SQLite belum ada:
+Jika database MySQL belum ada, buat database baru lewat phpMyAdmin:
+
+```text
+Nama database: kemenagt_sirita
+Collation: utf8mb4_unicode_ci
+```
+
+Setelah database dibuat dan kredensial `.env` sudah benar, jalankan:
 
 ```powershell
-New-Item -ItemType File database/database.sqlite
 php artisan migrate --seed
 ```
 
@@ -92,9 +102,9 @@ Frontend publik:
 Seeder awal:
 
 - Role
-- Unit Kantor Kemenag Tana Toraja
-- Kategori berita sesuai rancangan
-- Tag awal
+- Unit kerja Kantor Kemenag Tana Toraja, seksi/penyelenggara, 19 KUA, dan 7 Madrasah
+- Kategori berita Kemenag Tana Toraja, seksi/penyelenggara, KUA beserta 19 subkategori, dan Madrasah beserta 7 subkategori
+- Tag awal untuk topik umum layanan, keagamaan, unit, pengumuman, dan kegiatan
 - Halaman Profil, Visi Misi, Struktur Organisasi, Kontak, PPID
 - Akun Super Admin
 
@@ -107,13 +117,12 @@ composer install
 npm install
 copy .env.example .env
 php artisan key:generate
-New-Item -ItemType File database/database.sqlite
 php artisan migrate --seed
 php artisan storage:link
 npm run build
 ```
 
-Jika file `.env` dan `database/database.sqlite` ikut dipindahkan, biasanya tidak perlu `copy .env.example .env`, `key:generate`, dan `migrate --seed` lagi.
+Jika file `.env` ikut dipindahkan dan database MySQL sudah ada, biasanya tidak perlu `copy .env.example .env`, `key:generate`, dan `migrate --seed` lagi.
 
 Untuk menjalankan server manual:
 
@@ -146,23 +155,21 @@ Hasil test terakhir:
 2 passed
 ```
 
-## Catatan Penting
+Langkah yang sudah dirapikan:
 
-Untuk sementara, field `slug` di admin masih perlu diisi manual saat membuat berita/kategori/unit/halaman.
-
-Contoh slug:
-
-```text
-berita-kegiatan-kemenag
-profil-kantor
-kua-makale
-```
+1. Buat slug otomatis dari judul/nama di form admin.
+2. Rapikan label menu admin ke bahasa Indonesia.
+3. Sesuaikan kategori berita dan tambahkan subkategori KUA/Madrasah.
+4. Sesuaikan unit kerja dengan struktur Kemenag Tana Toraja, KUA, dan Madrasah.
+5. Tambahkan tag awal dan fitur membuat tag langsung dari form Berita.
+6. Gambar utama dan gambar share berita bisa dipilih dari Media atau upload gambar baru dari form Berita.
+7. Lampiran gambar di kolom Isi Berita tersimpan ke storage publik dan tercatat di menu Media.
+8. Gambar yang disisipkan di kolom Isi Berita bisa dipilih dari Media/upload baru dan diberi teks alternatif. Jika ingin mengganti gambar di badan teks, hapus dulu gambar lama lalu sisipkan gambar baru.
 
 Langkah berikutnya yang perlu dirapikan:
 
-1. Buat slug otomatis dari judul/nama di form admin.
-2. Tambahkan sample berita agar halaman depan tidak kosong.
-3. Rapikan role permission per menu.
-4. Tambahkan approval workflow untuk Editor dan Kontributor.
-5. Tambahkan dashboard statistik berita.
-6. Rapikan desain frontend sesuai identitas Kemenag.
+1. Tambahkan sample berita agar halaman depan tidak kosong.
+2. Rapikan role permission per menu.
+3. Tambahkan approval workflow untuk Editor dan Kontributor.
+4. Tambahkan dashboard statistik berita.
+5. Rapikan desain frontend sesuai identitas Kemenag.

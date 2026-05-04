@@ -20,6 +20,14 @@ class TagResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $modelLabel = 'Tag';
+
+    protected static ?string $pluralModelLabel = 'Tag';
+
+    protected static ?string $navigationLabel = 'Tag';
+
+    protected static ?int $navigationSort = 3;
+
     public static function form(Schema $schema): Schema
     {
         return TagForm::configure($schema);

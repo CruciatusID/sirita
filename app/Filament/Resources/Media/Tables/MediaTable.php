@@ -23,7 +23,7 @@ class MediaTable
                     ->searchable(),
                 TextColumn::make('size')
                     ->label('Ukuran')
-                    ->numeric()
+                    ->formatStateUsing(fn (?int $state): string => $state ? number_format($state / 1024, 1).' KB' : '-')
                     ->sortable(),
                 TextColumn::make('uploader.name')
                     ->label('Pengunggah')

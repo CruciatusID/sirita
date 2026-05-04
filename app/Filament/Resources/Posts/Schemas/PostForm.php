@@ -2,14 +2,16 @@
 
 namespace App\Filament\Resources\Posts\Schemas;
 
+use App\Filament\Support\MediaImageSelect;
+use App\Filament\Support\RichContentEditor;
+use App\Filament\Support\SlugFields;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class PostForm
 {
@@ -19,34 +21,45 @@ class PostForm
             ->components([
                 Hidden::make('user_id')
                     ->default(fn () => auth()->id()),
-                TextInput::make('title')
-                    ->label('Judul')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('slug')
-                    ->required()
-                    ->maxLength(255),
+                SlugFields::source(
+                    TextInput::make('title')
+                        ->label('Judul')
+                        ->required()
+                        ->maxLength(255),
+                ),
+                SlugFields::slug(),
                 Textarea::make('excerpt')
                     ->label('Ringkasan')
                     ->rows(3),
-                RichEditor::make('content')
-                    ->label('Isi Berita')
+                RichContentEditor::make('content', 'Isi Berita', 'posts/content')
                     ->required()
                     ->columnSpanFull(),
-                FileUpload::make('featured_image')
-                    ->label('Gambar Utama')
-                    ->image()
-                    ->directory('posts/featured')
-                    ->imageEditor(),
+                MediaImageSelect::make('featured_image', 'Gambar Utama', 'posts/featured'),
                 Select::make('category_id')
                     ->label('Kategori')
-                    ->relationship('category', 'name')
+                    ->relationship(
+                        'category',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query) => $query
+                            ->where('is_active', true)
+                            ->with('parent')
+                            ->orderBy('parent_id')
+                            ->orderBy('name'),
+                    )
+                    ->getOptionLabelFromRecordUsing(fn ($record): string => $record->full_name)
                     ->searchable()
                     ->preload()
                     ->required(),
                 Select::make('unit_id')
                     ->label('Unit Kerja')
-                    ->relationship('unit', 'name')
+                    ->relationship(
+                        'unit',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query) => $query
+                            ->where('is_active', true)
+                            ->orderBy('type')
+                            ->orderBy('name'),
+                    )
                     ->searchable()
                     ->preload(),
                 Select::make('tags')
@@ -54,7 +67,16 @@ class PostForm
                     ->relationship('tags', 'name')
                     ->multiple()
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->createOptionForm([
+                        SlugFields::source(
+                            TextInput::make('name')
+                                ->label('Nama Tag')
+                                ->required()
+                                ->maxLength(255),
+                        ),
+                        SlugFields::slug(),
+                    ]),
                 Select::make('status')
                     ->label('Status')
                     ->options([
@@ -73,11 +95,7 @@ class PostForm
                 Textarea::make('seo_description')
                     ->label('SEO Description')
                     ->rows(3),
-                FileUpload::make('og_image')
-                    ->label('Gambar Share')
-                    ->image()
-                    ->directory('posts/og')
-                    ->imageEditor(),
+                MediaImageSelect::make('og_image', 'Gambar Share', 'posts/og'),
             ]);
     }
 }

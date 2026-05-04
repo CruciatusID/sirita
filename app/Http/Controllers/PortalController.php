@@ -15,12 +15,12 @@ class PortalController extends Controller
     public function home(): View
     {
         $headline = Post::published()
-            ->with(['category', 'author'])
+            ->with(['category.parent', 'author'])
             ->latest('published_at')
             ->first();
 
         $latestPosts = Post::published()
-            ->with(['category', 'author'])
+            ->with(['category.parent', 'author'])
             ->when($headline, fn ($query) => $query->whereKeyNot($headline->id))
             ->latest('published_at')
             ->paginate(9);
@@ -28,7 +28,7 @@ class PortalController extends Controller
         return view('portal.home', [
             'headline' => $headline,
             'latestPosts' => $latestPosts,
-            'categories' => Category::where('is_active', true)->orderBy('name')->get(),
+            'categories' => Category::where('is_active', true)->with('parent')->orderBy('name')->get(),
             'banners' => Banner::where('status', 'active')->orderBy('order')->get(),
         ]);
     }
@@ -40,9 +40,9 @@ class PortalController extends Controller
         $post->increment('views');
 
         return view('portal.post', [
-            'post' => $post->load(['category', 'author', 'unit', 'tags']),
+            'post' => $post->load(['category.parent', 'author', 'unit', 'tags']),
             'relatedPosts' => Post::published()
-                ->with('category')
+                ->with('category.parent')
                 ->where('category_id', $post->category_id)
                 ->whereKeyNot($post->id)
                 ->latest('published_at')
@@ -57,7 +57,7 @@ class PortalController extends Controller
             'title' => "Kategori {$category->name}",
             'posts' => $category->posts()
                 ->published()
-                ->with(['category', 'author'])
+                ->with(['category.parent', 'author'])
                 ->latest('published_at')
                 ->paginate(12),
         ]);
@@ -69,7 +69,7 @@ class PortalController extends Controller
             'title' => "Unit {$unit->name}",
             'posts' => $unit->posts()
                 ->published()
-                ->with(['category', 'author'])
+                ->with(['category.parent', 'author'])
                 ->latest('published_at')
                 ->paginate(12),
         ]);

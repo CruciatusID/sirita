@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Pages\Schemas;
 
+use App\Filament\Support\SlugFields;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -14,13 +15,13 @@ class PageForm
     {
         return $schema
             ->components([
-                TextInput::make('title')
-                    ->label('Judul')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('slug')
-                    ->required()
-                    ->maxLength(255),
+                SlugFields::source(
+                    TextInput::make('title')
+                        ->label('Judul')
+                        ->required()
+                        ->maxLength(255),
+                ),
+                SlugFields::slug(),
                 RichEditor::make('content')
                     ->label('Konten')
                     ->required()

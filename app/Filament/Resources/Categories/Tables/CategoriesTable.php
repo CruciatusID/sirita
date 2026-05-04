@@ -19,6 +19,11 @@ class CategoriesTable
                     ->label('Nama')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('parent.name')
+                    ->label('Kategori Induk')
+                    ->placeholder('-')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('slug')
                     ->searchable(),
                 IconColumn::make('is_active')

@@ -2,10 +2,13 @@
 
 namespace App\Filament\Resources\Categories\Schemas;
 
+use App\Filament\Support\SlugFields;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class CategoryForm
 {
@@ -13,13 +16,26 @@ class CategoryForm
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->label('Nama')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('slug')
-                    ->required()
-                    ->maxLength(255),
+                Select::make('parent_id')
+                    ->label('Kategori Induk')
+                    ->relationship(
+                        'parent',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query) => $query
+                            ->whereNull('parent_id')
+                            ->where('is_active', true)
+                            ->orderBy('name'),
+                        ignoreRecord: true,
+                    )
+                    ->searchable()
+                    ->preload(),
+                SlugFields::source(
+                    TextInput::make('name')
+                        ->label('Nama')
+                        ->required()
+                        ->maxLength(255),
+                ),
+                SlugFields::slug(),
                 Textarea::make('description')
                     ->label('Deskripsi')
                     ->rows(3),

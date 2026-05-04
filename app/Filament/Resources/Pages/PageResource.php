@@ -20,6 +20,14 @@ class PageResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $modelLabel = 'Halaman';
+
+    protected static ?string $pluralModelLabel = 'Halaman';
+
+    protected static ?string $navigationLabel = 'Halaman';
+
+    protected static ?int $navigationSort = 5;
+
     public static function form(Schema $schema): Schema
     {
         return PageForm::configure($schema);

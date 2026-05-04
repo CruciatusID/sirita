@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Units\Schemas;
 
+use App\Filament\Support\SlugFields;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -14,13 +15,13 @@ class UnitForm
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->label('Nama')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('slug')
-                    ->required()
-                    ->maxLength(255),
+                SlugFields::source(
+                    TextInput::make('name')
+                        ->label('Nama')
+                        ->required()
+                        ->maxLength(255),
+                ),
+                SlugFields::slug(),
                 Select::make('type')
                     ->label('Jenis')
                     ->options([
@@ -29,6 +30,7 @@ class UnitForm
                         'Madrasah' => 'Madrasah',
                         'Seksi' => 'Seksi',
                         'Bimas' => 'Bimas',
+                        'Penyelenggara' => 'Penyelenggara',
                     ])
                     ->required(),
                 Textarea::make('address')

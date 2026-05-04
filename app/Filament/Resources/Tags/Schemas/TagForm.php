@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Tags\Schemas;
 
+use App\Filament\Support\SlugFields;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -11,13 +12,13 @@ class TagForm
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->label('Nama')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('slug')
-                    ->required()
-                    ->maxLength(255),
+                SlugFields::source(
+                    TextInput::make('name')
+                        ->label('Nama')
+                        ->required()
+                        ->maxLength(255),
+                ),
+                SlugFields::slug(),
             ]);
     }
 }

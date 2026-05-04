@@ -20,6 +20,14 @@ class BannerResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $modelLabel = 'Banner';
+
+    protected static ?string $pluralModelLabel = 'Banner';
+
+    protected static ?string $navigationLabel = 'Banner';
+
+    protected static ?int $navigationSort = 6;
+
     public static function form(Schema $schema): Schema
     {
         return BannerForm::configure($schema);
