@@ -5,12 +5,16 @@ namespace App\Filament\Resources\Posts\Schemas;
 use App\Filament\Support\MediaImageSelect;
 use App\Filament\Support\RichContentEditor;
 use App\Filament\Support\SlugFields;
+use App\Models\Media;
+use App\Models\Post;
+use App\Models\Unit;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Utilities\Set;
 use Illuminate\Database\Eloquent\Builder;
 
 class PostForm
@@ -34,7 +38,31 @@ class PostForm
                 RichContentEditor::make('content', 'Isi Berita', 'posts/content')
                     ->required()
                     ->columnSpanFull(),
-                MediaImageSelect::make('featured_image', 'Gambar Utama', 'posts/featured'),
+                MediaImageSelect::make('featured_image', 'Gambar Utama', 'posts/featured')
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, ?string $state) {
+                        if (blank($state)) {
+                            return;
+                        }
+
+                        $media = Media::where('path', $state)->first();
+
+                        if ($media?->caption) {
+                            $set('featured_image_caption', $media->caption);
+                        }
+                    }),
+                TextInput::make('featured_image_caption')
+                    ->label('Keterangan Gambar')
+                    ->placeholder('Otomatis terisi dari Media, tapi bisa diubah...')
+                    ->afterStateHydrated(function (TextInput $component, $state, ?Post $record) {
+                        if (blank($state) && $record?->featured_image) {
+                            $mediaCaption = Media::where('path', $record->featured_image)->value('caption');
+                            if ($mediaCaption) {
+                                $component->state($mediaCaption);
+                            }
+                        }
+                    })
+                    ->maxLength(255),
                 Select::make('category_id')
                     ->label('Kategori')
                     ->relationship(
@@ -88,7 +116,8 @@ class PostForm
                     ->default('draft')
                     ->required(),
                 DateTimePicker::make('published_at')
-                    ->label('Tanggal Terbit'),
+                    ->label('Tanggal Terbit')
+                    ->default(now()),
                 TextInput::make('seo_title')
                     ->label('SEO Title')
                     ->maxLength(255),

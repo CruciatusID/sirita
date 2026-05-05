@@ -8,4 +8,14 @@ use Filament\Resources\Pages\CreateRecord;
 class CreatePost extends CreateRecord
 {
     protected static string $resource = PostResource::class;
+
+    protected function getCreatedNotificationTitle(): ?string
+    {
+        return 'Berita berhasil ditambahkan';
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResourceUrl();
+    }
 }

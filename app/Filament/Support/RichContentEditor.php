@@ -21,7 +21,7 @@ class RichContentEditor
                 'image/webp',
                 'image/gif',
             ])
-            ->fileAttachmentsMaxSize(5120)
+            ->fileAttachmentsMaxSize(300)
             ->saveUploadedFileAttachmentUsing(function (TemporaryUploadedFile $file) use ($directory): string {
                 $fileName = StoredFileName::uniqueFromUpload($file, $directory);
                 $path = $file->storeAs($directory, $fileName, 'public');

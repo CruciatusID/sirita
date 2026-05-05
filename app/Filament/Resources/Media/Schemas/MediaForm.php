@@ -21,13 +21,19 @@ class MediaForm
                     ->label('Nama Tampilan')
                     ->helperText('Opsional. Jika dikosongkan, sistem memakai nama file.')
                     ->maxLength(255),
+                TextInput::make('caption')
+                    ->label('Keterangan / Caption')
+                    ->maxLength(255),
                 FileUpload::make('path')
-                    ->label('File')
+                    ->label('File Gambar')
+                    ->image()
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
                     ->disk('public')
                     ->directory('media')
                     ->getUploadedFileNameForStorageUsing(
                         fn (TemporaryUploadedFile $file): string => StoredFileName::uniqueFromUpload($file, 'media'),
                     )
+                    ->maxSize(300)
                     ->required(),
                 Placeholder::make('mime_type_preview')
                     ->label('MIME Type')

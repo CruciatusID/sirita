@@ -22,6 +22,7 @@ class BannerForm
                     ->image()
                     ->directory('banners')
                     ->imageEditor()
+                    ->maxSize(300)
                     ->required(),
                 TextInput::make('link')
                     ->label('Link')

@@ -25,6 +25,9 @@ class MediaImageSelect
                     ->label('Nama Tampilan')
                     ->helperText('Opsional. Jika dikosongkan, sistem memakai nama file.')
                     ->maxLength(255),
+                TextInput::make('caption')
+                    ->label('Keterangan / Caption')
+                    ->maxLength(255),
                 FileUpload::make('path')
                     ->label('File Gambar')
                     ->disk('public')
@@ -34,6 +37,7 @@ class MediaImageSelect
                         fn (TemporaryUploadedFile $file): string => StoredFileName::uniqueFromUpload($file, $directory),
                     )
                     ->imageEditor()
+                    ->maxSize(300)
                     ->required(),
             ])
             ->createOptionUsing(function (array $data): string {
@@ -41,6 +45,7 @@ class MediaImageSelect
 
                 $media = Media::create([
                     'filename' => filled($data['filename'] ?? null) ? $data['filename'] : basename($path),
+                    'caption' => $data['caption'] ?? null,
                     'path' => $path,
                     'uploaded_by' => auth()->id(),
                 ]);

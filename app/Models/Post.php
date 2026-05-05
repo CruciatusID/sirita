@@ -17,6 +17,7 @@ use Spatie\Activitylog\Support\LogOptions;
     'excerpt',
     'content',
     'featured_image',
+    'featured_image_caption',
     'category_id',
     'user_id',
     'unit_id',
@@ -69,6 +70,19 @@ class Post extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function getFeaturedImageCaptionAttribute($value): ?string
+    {
+        if (filled($value)) {
+            return $value;
+        }
+
+        if (blank($this->featured_image)) {
+            return null;
+        }
+
+        return Media::where('path', $this->featured_image)->value('caption');
     }
 
     public function scopePublished(Builder $query): Builder

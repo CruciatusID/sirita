@@ -28,6 +28,9 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandLogo(asset('images/logo-kemenag.png'))
+            ->brandLogoHeight('3rem')
+            ->favicon(asset('images/logo-kemenag.png'))
             ->colors([
                 'primary' => Color::Amber,
             ])

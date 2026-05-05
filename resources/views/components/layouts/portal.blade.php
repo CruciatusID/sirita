@@ -9,6 +9,14 @@
         $metaImage = filled($image ?? null) ? asset('storage/' . $image) : null;
     @endphp
     <title>{{ $metaTitle }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-kemenag.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-serif-news { font-family: 'Playfair Display', serif; }
+    </style>
     <meta name="description" content="{{ $metaDescription }}">
     <meta property="og:title" content="{{ $metaTitle }}">
     <meta property="og:description" content="{{ $metaDescription }}">
@@ -22,20 +30,20 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-stone-50 text-stone-900 antialiased">
-    <header class="border-b border-stone-200 bg-white">
-        <div class="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 md:flex-row md:items-center md:justify-between">
-            <a href="{{ route('home') }}" class="flex items-center gap-3">
-                <span class="grid h-11 w-11 place-items-center rounded bg-emerald-800 font-serif text-xl font-black text-white">S</span>
+    <header class="sticky top-0 z-50 border-b border-stone-200 bg-white/80 backdrop-blur-md">
+        <div class="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-3 md:flex-row md:items-center md:justify-between">
+            <a href="{{ route('home') }}" class="group flex items-center gap-3">
+                <img src="{{ asset('images/logo-kemenag.png') }}" alt="Logo Kemenag" class="h-11 w-auto transition-transform group-hover:scale-105">
                 <span>
-                    <span class="block text-2xl font-black leading-none tracking-tight">SIRITA</span>
-                    <span class="text-xs font-bold uppercase text-stone-500">Kemenag Tana Toraja</span>
+                    <span class="block text-xl font-black leading-none tracking-tight text-emerald-950">SIRITA</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-stone-500">Sistem Informasi Religi Tana Toraja</span>
                 </span>
             </a>
-            <nav class="flex flex-wrap items-center gap-1 text-sm font-semibold text-stone-700">
-                <a class="px-3 py-2 hover:bg-stone-100 hover:text-emerald-800" href="{{ route('home') }}">Beranda</a>
-                <a class="px-3 py-2 hover:bg-stone-100 hover:text-emerald-800" href="{{ route('pages.show', 'profil-kantor') }}">Profil</a>
-                <a class="px-3 py-2 hover:bg-stone-100 hover:text-emerald-800" href="{{ route('pages.show', 'ppid') }}">PPID</a>
-                <a class="bg-emerald-800 px-3 py-2 text-white hover:bg-emerald-900" href="/admin">Admin</a>
+            <nav class="flex flex-wrap items-center gap-1 text-sm font-bold text-stone-600">
+                <a class="rounded-full px-4 py-2 transition-colors hover:bg-emerald-50 hover:text-emerald-800 {{ request()->routeIs('home') ? 'bg-emerald-50 text-emerald-800' : '' }}" href="{{ route('home') }}">Beranda</a>
+                <a class="rounded-full px-4 py-2 transition-colors hover:bg-emerald-50 hover:text-emerald-800" href="{{ route('pages.show', 'profil-kantor') }}">Profil</a>
+                <a class="rounded-full px-4 py-2 transition-colors hover:bg-emerald-50 hover:text-emerald-800" href="{{ route('pages.show', 'ppid') }}">PPID</a>
+                <a class="ml-2 rounded-full bg-emerald-800 px-5 py-2 text-white shadow-lg shadow-emerald-900/20 transition-all hover:bg-emerald-900 hover:shadow-xl" href="/admin">Panel Admin</a>
             </nav>
         </div>
     </header>
