@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Units;
 
+use App\Filament\Support\AdminAccess;
 use App\Filament\Resources\Units\Pages\CreateUnit;
 use App\Filament\Resources\Units\Pages\EditUnit;
 use App\Filament\Resources\Units\Pages\ListUnits;
@@ -27,6 +28,11 @@ class UnitResource extends Resource
     protected static ?string $navigationLabel = 'Unit Kerja';
 
     protected static ?int $navigationSort = 4;
+
+    public static function canAccess(): bool
+    {
+        return AdminAccess::hasAnyRole(AdminAccess::CONTENT_MANAGERS);
+    }
 
     public static function form(Schema $schema): Schema
     {

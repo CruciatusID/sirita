@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Tags;
 
+use App\Filament\Support\AdminAccess;
 use App\Filament\Resources\Tags\Pages\CreateTag;
 use App\Filament\Resources\Tags\Pages\EditTag;
 use App\Filament\Resources\Tags\Pages\ListTags;
@@ -27,6 +28,11 @@ class TagResource extends Resource
     protected static ?string $navigationLabel = 'Tag';
 
     protected static ?int $navigationSort = 3;
+
+    public static function canAccess(): bool
+    {
+        return AdminAccess::hasAnyRole(AdminAccess::EDITORIAL);
+    }
 
     public static function form(Schema $schema): Schema
     {

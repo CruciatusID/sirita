@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @php
         $metaTitle = $title ?? 'SIRITA - Kemenag Tana Toraja';
         $metaDescription = $description ?? 'Portal berita resmi Kementerian Agama Kabupaten Tana Toraja.';
@@ -30,8 +31,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-stone-50 text-stone-900 antialiased">
-    <header class="sticky top-0 z-50 border-b border-stone-200 bg-white/80 backdrop-blur-md">
-        <div class="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-3 md:flex-row md:items-center md:justify-between">
+    <header class="sticky top-0 z-50 border-b border-stone-200 bg-white/90 backdrop-blur-md">
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3">
             <a href="{{ route('home') }}" class="group flex items-center gap-3">
                 <img src="{{ asset('images/logo-kemenag.png') }}" alt="Logo Kemenag" class="h-11 w-auto transition-transform group-hover:scale-105">
                 <span>
@@ -39,13 +40,28 @@
                     <span class="text-[10px] font-bold uppercase tracking-wider text-stone-500">Sistem Informasi Religi Tana Toraja</span>
                 </span>
             </a>
-            <nav class="flex flex-wrap items-center gap-1 text-sm font-bold text-stone-600">
+            <button type="button" class="grid h-10 w-10 place-items-center rounded-full border border-stone-200 text-stone-700 md:hidden" data-mobile-menu-button aria-controls="portal-mobile-menu" aria-expanded="false" aria-label="Buka menu navigasi">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                    <path d="M4 7h16" />
+                    <path d="M4 12h16" />
+                    <path d="M4 17h16" />
+                </svg>
+            </button>
+            <nav class="hidden items-center gap-1 text-sm font-bold text-stone-600 md:flex">
                 <a class="rounded-full px-4 py-2 transition-colors hover:bg-emerald-50 hover:text-emerald-800 {{ request()->routeIs('home') ? 'bg-emerald-50 text-emerald-800' : '' }}" href="{{ route('home') }}">Beranda</a>
                 <a class="rounded-full px-4 py-2 transition-colors hover:bg-emerald-50 hover:text-emerald-800" href="{{ route('pages.show', 'profil-kantor') }}">Profil</a>
                 <a class="rounded-full px-4 py-2 transition-colors hover:bg-emerald-50 hover:text-emerald-800" href="{{ route('pages.show', 'ppid') }}">PPID</a>
                 <a class="ml-2 rounded-full bg-emerald-800 px-5 py-2 text-white shadow-lg shadow-emerald-900/20 transition-all hover:bg-emerald-900 hover:shadow-xl" href="/admin">Panel Admin</a>
             </nav>
         </div>
+        <nav id="portal-mobile-menu" class="hidden border-t border-stone-200 bg-white px-5 py-3 text-sm font-bold text-stone-700 md:hidden" data-mobile-menu>
+            <div class="mx-auto grid max-w-7xl gap-2">
+                <a class="rounded-xl px-4 py-3 transition-colors hover:bg-emerald-50 hover:text-emerald-800 {{ request()->routeIs('home') ? 'bg-emerald-50 text-emerald-800' : '' }}" href="{{ route('home') }}">Beranda</a>
+                <a class="rounded-xl px-4 py-3 transition-colors hover:bg-emerald-50 hover:text-emerald-800" href="{{ route('pages.show', 'profil-kantor') }}">Profil</a>
+                <a class="rounded-xl px-4 py-3 transition-colors hover:bg-emerald-50 hover:text-emerald-800" href="{{ route('pages.show', 'ppid') }}">PPID</a>
+                <a class="rounded-xl bg-emerald-800 px-4 py-3 text-white transition-colors hover:bg-emerald-900" href="/admin">Panel Admin</a>
+            </div>
+        </nav>
     </header>
 
     <main>

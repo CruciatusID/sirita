@@ -8,6 +8,9 @@ use App\Models\Page;
 use App\Models\Post;
 use App\Models\Unit;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class PortalController extends Controller
@@ -25,10 +28,31 @@ class PortalController extends Controller
             ->latest('published_at')
             ->paginate(9);
 
+        $popularCategories = Category::where('is_active', true)
+            ->with('parent')
+            ->withCount([
+                'posts as published_posts_count' => fn ($query) => $query->published(),
+            ])
+            ->having('published_posts_count', '>', 0)
+            ->orderByDesc('published_posts_count')
+            ->orderBy('name')
+            ->limit(12)
+            ->get();
+
+        $popularPosts = Post::published()
+            ->with(['category.parent', 'author'])
+            ->where('published_at', '>=', now()->subDays(7))
+            ->orderByDesc('views')
+            ->latest('published_at')
+            ->limit(5)
+            ->get();
+
         return view('portal.home', [
             'headline' => $headline,
             'latestPosts' => $latestPosts,
             'categories' => Category::where('is_active', true)->with('parent')->orderBy('name')->get(),
+            'popularCategories' => $popularCategories,
+            'popularPosts' => $popularPosts,
             'banners' => Banner::where('status', 'active')->orderBy('order')->get(),
         ]);
     }
@@ -51,6 +75,35 @@ class PortalController extends Controller
         ]);
     }
 
+    public function like(Post $post): RedirectResponse
+    {
+        abort_unless($post->status === 'published' && ($post->published_at === null || $post->published_at->isPast()), 404);
+
+        $sessionKey = "liked_posts.{$post->id}";
+
+        if (! session()->has($sessionKey)) {
+            $post->increment('likes_count');
+            session()->put($sessionKey, true);
+        }
+
+        return back();
+    }
+
+    public function share(Request $request, Post $post): JsonResponse|RedirectResponse
+    {
+        abort_unless($post->status === 'published' && ($post->published_at === null || $post->published_at->isPast()), 404);
+
+        $post->increment('shares_count');
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'shares_count' => $post->shares_count,
+            ]);
+        }
+
+        return back();
+    }
+
     public function category(Category $category): View
     {
         return view('portal.archive', [
@@ -60,6 +113,31 @@ class PortalController extends Controller
                 ->with(['category.parent', 'author'])
                 ->latest('published_at')
                 ->paginate(12),
+        ]);
+    }
+
+    public function search(Request $request): View
+    {
+        $query = trim((string) $request->query('q'));
+
+        $posts = Post::published()
+            ->with(['category.parent', 'author'])
+            ->when($query !== '', function ($builder) use ($query): void {
+                $builder->where(function ($builder) use ($query): void {
+                    $builder
+                        ->where('title', 'like', "%{$query}%")
+                        ->orWhere('excerpt', 'like', "%{$query}%")
+                        ->orWhere('content', 'like', "%{$query}%")
+                        ->orWhereHas('category', fn ($category) => $category->where('name', 'like', "%{$query}%"));
+                });
+            })
+            ->latest('published_at')
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('portal.search', [
+            'query' => $query,
+            'posts' => $posts,
         ]);
     }
 

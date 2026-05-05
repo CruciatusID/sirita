@@ -3,7 +3,7 @@
 <article class="group flex flex-col overflow-hidden bg-white shadow-sm ring-1 ring-stone-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-emerald-200">
     <a href="{{ route('posts.show', $post) }}" class="relative block aspect-[16/10] overflow-hidden bg-stone-100">
         @if ($post->featured_image)
-            <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
+            <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" loading="lazy" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
         @else
             <div class="flex h-full w-full items-center justify-center bg-stone-100">
                 <svg class="h-12 w-12 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -28,6 +28,9 @@
         <div class="mt-5 flex items-center justify-between border-t border-stone-100 pt-3">
             <span class="text-[10px] font-medium text-stone-400">
                 {{ $post->published_at?->translatedFormat('d M Y') ?? $post->created_at->translatedFormat('d M Y') }}
+            </span>
+            <span class="text-[10px] font-semibold text-stone-400">
+                {{ number_format($post->views) }} views
             </span>
             <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100">
                 Baca Selengkapnya &rarr;

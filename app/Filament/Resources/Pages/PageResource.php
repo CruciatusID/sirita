@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Pages;
 
+use App\Filament\Support\AdminAccess;
 use App\Filament\Resources\Pages\Pages\CreatePage;
 use App\Filament\Resources\Pages\Pages\EditPage;
 use App\Filament\Resources\Pages\Pages\ListPages;
@@ -27,6 +28,11 @@ class PageResource extends Resource
     protected static ?string $navigationLabel = 'Halaman';
 
     protected static ?int $navigationSort = 5;
+
+    public static function canAccess(): bool
+    {
+        return AdminAccess::hasAnyRole(AdminAccess::CONTENT_MANAGERS);
+    }
 
     public static function form(Schema $schema): Schema
     {

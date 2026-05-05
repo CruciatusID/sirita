@@ -4,11 +4,27 @@
             <a href="{{ route('categories.show', $post->category) }}" class="text-xs font-bold uppercase tracking-[0.2em] text-emerald-800">{{ $post->category->full_name }}</a>
             <h1 class="font-serif-news mt-4 text-4xl font-bold leading-tight text-stone-900 md:text-5xl lg:text-6xl">{{ $post->title }}</h1>
 
-            <div class="mt-8 flex items-center justify-center gap-4 text-sm text-stone-500">
-                <div class="flex flex-col items-center">
-                    <span class="font-bold text-stone-900">{{ $post->author->name }}</span>
-                    <span>{{ $post->published_at?->translatedFormat('l, d F Y') ?? $post->created_at->translatedFormat('l, d F Y') }}</span>
-                </div>
+            <div class="mt-8 space-y-1 text-sm leading-6 text-stone-600">
+                <p>
+                    <span class="font-bold text-stone-900">Tayang:</span>
+                    {{ $post->published_at?->translatedFormat('l, d F Y H:i') ?? $post->created_at->translatedFormat('l, d F Y H:i') }} WITA
+                </p>
+                <p>
+                    <span class="font-bold text-stone-900">Penulis:</span>
+                    {{ $post->author->name }}
+                </p>
+            </div>
+
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+                <span class="rounded-full bg-stone-100 px-4 py-2 text-xs font-bold text-stone-600">
+                    {{ number_format($post->views) }} views
+                </span>
+                <span class="rounded-full bg-stone-100 px-4 py-2 text-xs font-bold text-stone-600">
+                    {{ number_format($post->likes_count) }} suka
+                </span>
+                <span class="rounded-full bg-stone-100 px-4 py-2 text-xs font-bold text-stone-600">
+                    <span data-share-count>{{ number_format($post->shares_count) }}</span> dibagikan
+                </span>
             </div>
         </header>
 
@@ -30,6 +46,35 @@
         </div>
 
         <footer class="mt-12 border-t border-stone-100 pt-8">
+            <div class="mb-8 flex flex-wrap items-center justify-end gap-3">
+                <p class="hidden rounded-full bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-800" data-share-status role="status" aria-live="polite"></p>
+
+                <div class="flex gap-3">
+                    <form method="POST" action="{{ route('posts.like', $post) }}">
+                        @csrf
+                        <button type="submit" class="grid h-11 w-11 place-items-center rounded-full bg-emerald-800 text-white shadow-lg shadow-emerald-900/15 transition-all hover:-translate-y-0.5 hover:bg-emerald-900" title="{{ session()->has("liked_posts.{$post->id}") ? 'Sudah disukai' : 'Suka' }}" aria-label="{{ session()->has("liked_posts.{$post->id}") ? 'Sudah disukai' : 'Suka berita ini' }}">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="{{ session()->has("liked_posts.{$post->id}") ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M7 10v11" />
+                                <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z" />
+                            </svg>
+                        </button>
+                    </form>
+
+                    <form method="POST" action="{{ route('posts.share', $post) }}" data-share-form data-share-title="{{ $post->title }}" data-share-url="{{ route('posts.show', $post) }}">
+                        @csrf
+                        <button type="submit" class="grid h-11 w-11 place-items-center rounded-full border border-stone-200 bg-white text-stone-700 shadow-lg shadow-stone-900/5 transition-all hover:-translate-y-0.5 hover:border-emerald-700 hover:text-emerald-800" title="Bagikan" aria-label="Bagikan berita ini">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="18" cy="5" r="3" />
+                                <circle cx="6" cy="12" r="3" />
+                                <circle cx="18" cy="19" r="3" />
+                                <path d="m8.59 13.51 6.83 3.98" />
+                                <path d="m15.41 6.51-6.82 3.98" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
             @if ($post->tags->isNotEmpty())
                 <div class="flex flex-wrap items-center gap-3">
                     <span class="text-xs font-bold uppercase tracking-widest text-stone-400">Tagar:</span>
@@ -66,4 +111,86 @@
             </div>
         </section>
     @endif
+
+    <script>
+        function copyTextToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                return navigator.clipboard.writeText(text);
+            }
+
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.setAttribute('readonly', '');
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+
+                return Promise.resolve();
+            } catch (error) {
+                return Promise.reject(error);
+            } finally {
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function showShareStatus(message) {
+            const status = document.querySelector('[data-share-status]');
+
+            if (! status) {
+                return;
+            }
+
+            status.textContent = message;
+            status.classList.remove('hidden');
+
+            window.clearTimeout(status.dataset.timeoutId);
+            status.dataset.timeoutId = window.setTimeout(() => {
+                status.classList.add('hidden');
+                status.textContent = '';
+            }, 2500);
+        }
+
+        document.querySelectorAll('[data-share-form]').forEach((form) => {
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const shareUrl = form.dataset.shareUrl;
+                const shareTitle = form.dataset.shareTitle;
+                const token = document.querySelector('meta[name="csrf-token"]')?.content;
+
+                try {
+                    if (navigator.share) {
+                        await navigator.share({ title: shareTitle, url: shareUrl });
+                        showShareStatus('Dialog bagikan dibuka');
+                    } else {
+                        await copyTextToClipboard(shareUrl);
+                        showShareStatus('Link berita disalin');
+                    }
+
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': token,
+                        },
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        const counter = document.querySelector('[data-share-count]');
+
+                        if (counter && data.shares_count !== undefined) {
+                            counter.textContent = new Intl.NumberFormat('id-ID').format(data.shares_count);
+                        }
+                    }
+                } catch (error) {
+                    showShareStatus('Gagal membagikan link');
+                }
+            });
+        });
+    </script>
 </x-layouts.portal>

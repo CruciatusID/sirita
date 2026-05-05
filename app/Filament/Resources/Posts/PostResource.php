@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Posts;
 
+use App\Filament\Support\AdminAccess;
 use App\Filament\Resources\Posts\Pages\CreatePost;
 use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Filament\Resources\Posts\Pages\ListPosts;
@@ -27,6 +28,11 @@ class PostResource extends Resource
     protected static ?string $navigationLabel = 'Berita';
 
     protected static ?int $navigationSort = 1;
+
+    public static function canAccess(): bool
+    {
+        return AdminAccess::hasAnyRole(AdminAccess::CONTRIBUTORS);
+    }
 
     public static function form(Schema $schema): Schema
     {

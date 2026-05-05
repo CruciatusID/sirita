@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Categories;
 
+use App\Filament\Support\AdminAccess;
 use App\Filament\Resources\Categories\Pages\CreateCategory;
 use App\Filament\Resources\Categories\Pages\EditCategory;
 use App\Filament\Resources\Categories\Pages\ListCategories;
@@ -27,6 +28,11 @@ class CategoryResource extends Resource
     protected static ?string $navigationLabel = 'Kategori';
 
     protected static ?int $navigationSort = 2;
+
+    public static function canAccess(): bool
+    {
+        return AdminAccess::hasAnyRole(AdminAccess::EDITORIAL);
+    }
 
     public static function form(Schema $schema): Schema
     {

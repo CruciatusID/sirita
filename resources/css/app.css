@@ -11,6 +11,29 @@
 }
 
 @layer components {
+    .popular-marquee {
+        -webkit-mask-image: linear-gradient(to right, transparent, black 2rem, black calc(100% - 2rem), transparent);
+        mask-image: linear-gradient(to right, transparent, black 2rem, black calc(100% - 2rem), transparent);
+    }
+
+    .popular-marquee-track {
+        animation: popular-marquee 28s linear infinite;
+    }
+
+    .popular-marquee:hover .popular-marquee-track {
+        animation-play-state: paused;
+    }
+
+    @keyframes popular-marquee {
+        from {
+            transform: translateX(0);
+        }
+
+        to {
+            transform: translateX(-50%);
+        }
+    }
+
     .article-content > * {
         margin-block: 0;
     }

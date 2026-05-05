@@ -173,3 +173,80 @@ Langkah berikutnya yang perlu dirapikan:
 3. Tambahkan approval workflow untuk Editor dan Kontributor.
 4. Tambahkan dashboard statistik berita.
 5. Rapikan desain frontend sesuai identitas Kemenag.
+
+## Progress 2026-05-05
+
+Perubahan portal publik:
+
+1. Homepage sudah dirapikan dengan susunan:
+   - marquee Kategori Populer tepat di bawah header,
+   - headline/berita utama di kiri,
+   - Terpopuler 7 Hari di kanan,
+   - banner aktif,
+   - grid Berita Terbaru di bawah.
+2. Kategori Populer dihitung dari jumlah berita berstatus published per kategori.
+3. Terpopuler 7 Hari dihitung dari berita published dalam 7 hari terakhir, diurutkan dari jumlah views terbanyak.
+4. Search publik ditambahkan:
+   - route: `/cari?q=kata-kunci`
+   - mencari pada judul, ringkasan, isi, dan nama kategori.
+5. Header publik sudah punya navigasi mobile hamburger.
+6. Search bar ditempatkan di kanan bar kategori/marquee pada desktop, dan turun rapi pada mobile.
+7. Detail berita menampilkan meta dengan format:
+   - `Tayang: ... WITA`
+   - `Penulis: ...`
+8. Statistik berita ditampilkan di detail berita:
+   - views,
+   - suka,
+   - dibagikan.
+9. Tombol suka dan bagikan dipindahkan ke bawah artikel, sisi kanan, memakai ikon.
+10. Tombol bagikan sekarang:
+    - membuka native share dialog jika browser mendukung,
+    - menyalin link jika native share tidak tersedia,
+    - menampilkan pesan status seperti `Link berita disalin`,
+    - menaikkan counter share setelah share/copy berhasil.
+
+Perubahan admin dan media:
+
+1. Batas upload gambar diset 300 KB di form banner, media, pilihan media, dan rich editor.
+2. Media punya field caption.
+3. Post punya field caption gambar utama.
+4. Caption gambar utama bisa otomatis terisi dari caption Media, tetapi tetap bisa diedit.
+5. Tanggal Terbit otomatis terisi waktu saat ini saat membuat berita baru, tetapi tetap bisa diubah.
+6. Setelah membuat berita, notifikasi menjadi `Berita berhasil ditambahkan`.
+7. Setelah membuat berita, admin diarahkan kembali ke list Berita.
+8. Image optimizer hanya berjalan saat path file Media berubah, bukan setiap metadata media disimpan.
+
+Pembatasan menu Filament berdasarkan role:
+
+1. Super Admin: semua menu.
+2. Admin Humas: Berita, Media, Kategori, Tag, Unit Kerja, Halaman, Banner.
+3. Editor: Berita, Media, Kategori, Tag.
+4. Kontributor: Berita dan Media.
+
+File penting yang ditambahkan/diubah:
+
+- `app/Filament/Support/AdminAccess.php`
+- `database/migrations/2026_05_05_120000_add_feedback_counts_to_posts_table.php`
+- `resources/views/portal/search.blade.php`
+- `resources/views/portal/home.blade.php`
+- `resources/views/portal/post.blade.php`
+- `resources/views/components/layouts/portal.blade.php`
+- `resources/js/app.js`
+- `resources/css/app.css`
+
+Perintah penting saat lanjut di komputer lain:
+
+```powershell
+git pull
+composer install
+npm install
+php artisan migrate
+php artisan optimize:clear
+npm run dev
+```
+
+Catatan:
+
+- Jika `npm run dev` sudah berjalan, tidak perlu `npm run build` selama development.
+- Migration terbaru wajib dijalankan karena menambahkan `likes_count` dan `shares_count` di tabel `posts`.
+- Field Editor berita belum ditambahkan. Saat ini detail berita hanya menampilkan Tayang dan Penulis. Jika ingin format `Penulis: ... | Editor: ...`, perlu tambah field/relasi editor di tabel posts dan form admin.

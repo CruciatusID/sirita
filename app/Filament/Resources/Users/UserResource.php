@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users;
 
+use App\Filament\Support\AdminAccess;
 use App\Filament\Resources\Users\Pages\CreateUser;
 use App\Filament\Resources\Users\Pages\EditUser;
 use App\Filament\Resources\Users\Pages\ListUsers;
@@ -27,6 +28,11 @@ class UserResource extends Resource
     protected static ?string $navigationLabel = 'Pengguna';
 
     protected static ?int $navigationSort = 8;
+
+    public static function canAccess(): bool
+    {
+        return AdminAccess::hasAnyRole(['Super Admin']);
+    }
 
     public static function form(Schema $schema): Schema
     {

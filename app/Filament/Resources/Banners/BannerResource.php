@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Banners;
 
+use App\Filament\Support\AdminAccess;
 use App\Filament\Resources\Banners\Pages\CreateBanner;
 use App\Filament\Resources\Banners\Pages\EditBanner;
 use App\Filament\Resources\Banners\Pages\ListBanners;
@@ -27,6 +28,11 @@ class BannerResource extends Resource
     protected static ?string $navigationLabel = 'Banner';
 
     protected static ?int $navigationSort = 6;
+
+    public static function canAccess(): bool
+    {
+        return AdminAccess::hasAnyRole(AdminAccess::CONTENT_MANAGERS);
+    }
 
     public static function form(Schema $schema): Schema
     {

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Media;
 
+use App\Filament\Support\AdminAccess;
 use App\Filament\Resources\Media\Pages\CreateMedia;
 use App\Filament\Resources\Media\Pages\EditMedia;
 use App\Filament\Resources\Media\Pages\ListMedia;
@@ -27,6 +28,11 @@ class MediaResource extends Resource
     protected static ?string $navigationLabel = 'Media';
 
     protected static ?int $navigationSort = 7;
+
+    public static function canAccess(): bool
+    {
+        return AdminAccess::hasAnyRole(AdminAccess::CONTRIBUTORS);
+    }
 
     public static function form(Schema $schema): Schema
     {

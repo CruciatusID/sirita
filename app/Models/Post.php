@@ -27,6 +27,8 @@ use Spatie\Activitylog\Support\LogOptions;
     'seo_description',
     'og_image',
     'views',
+    'likes_count',
+    'shares_count',
 ])]
 class Post extends Model
 {
