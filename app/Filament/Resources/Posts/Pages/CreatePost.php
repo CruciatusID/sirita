@@ -18,4 +18,5 @@ class CreatePost extends CreateRecord
     {
         return $this->getResourceUrl();
     }
+
 }

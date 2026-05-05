@@ -20,6 +20,7 @@ use Spatie\Activitylog\Support\LogOptions;
     'featured_image_caption',
     'category_id',
     'user_id',
+    'editor_user_id',
     'unit_id',
     'status',
     'published_at',
@@ -62,6 +63,11 @@ class Post extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function editor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'editor_user_id');
     }
 
     public function unit(): BelongsTo

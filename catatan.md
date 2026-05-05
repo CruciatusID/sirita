@@ -216,6 +216,30 @@ Perubahan admin dan media:
 7. Setelah membuat berita, admin diarahkan kembali ke list Berita.
 8. Image optimizer hanya berjalan saat path file Media berubah, bukan setiap metadata media disimpan.
 
+Dummy data berita:
+
+1. Ditambahkan 3 kontributor dari seksi berbeda:
+   - Bimas Islam
+   - Bimas Kristen
+   - Pendidikan Islam
+2. Ditambahkan 6 dummy berita dengan kategori dan tag yang berbeda-beda.
+3. Setiap berita memakai gambar placeholder yang bisa diganti nanti:
+   - `posts/featured/dummy-news-01.jpg`
+   - `posts/featured/dummy-news-02.jpg`
+   - `posts/featured/dummy-news-03.jpg`
+   - `posts/featured/dummy-news-04.jpg`
+   - `posts/featured/dummy-news-05.jpg`
+   - `posts/featured/dummy-news-06.jpg`
+   - `posts/featured/dummy-news-07.jpg`
+   - `posts/featured/dummy-news-08.jpg`
+   - `posts/featured/dummy-news-09.jpg`
+   - file sumber gambar ada di folder `contohgambar`
+   - saat seed ulang di komputer lain, salin gambar itu ke `storage/app/public/posts/featured` dan `storage/app/public/posts/og` dengan nama yang sama
+   - pemetaan tema saat ini: 01 rapat koordinasi, 02 pembinaan ASN, 03 dialog lintas iman, 04 literasi digital madrasah, 05 layanan nikah, 06 pembinaan siswa, 07 remaja dan game, 08 keluarga dan game, 09 panduan bijak game
+4. Data editor berita diisi otomatis lewat relasi `editor_user_id`, supaya detail berita bisa menampilkan `Penulis` dan `Editor` tanpa field manual di form.
+5. List berita admin sekarang punya tab cepat `Semua / Draft / Review / Terbit / Ditolak`.
+6. Ditambahkan 3 dummy berita baru bertema game online dari sisi agama, dengan penulis langsung akun editor.
+
 Pembatasan menu Filament berdasarkan role:
 
 1. Super Admin: semua menu.
@@ -226,7 +250,15 @@ Pembatasan menu Filament berdasarkan role:
 File penting yang ditambahkan/diubah:
 
 - `app/Filament/Support/AdminAccess.php`
+- `app/Filament/Resources/Posts/Pages/EditPost.php`
+- `app/Http/Controllers/PortalController.php`
+- `app/Models/Post.php`
+- `app/Filament/Resources/Posts/PostResource.php`
+- `app/Filament/Resources/Posts/Tables/PostsTable.php`
 - `database/migrations/2026_05_05_120000_add_feedback_counts_to_posts_table.php`
+- `database/migrations/2026_05_05_173000_add_editor_name_to_posts_table.php`
+- `database/migrations/2026_05_05_181000_add_editor_user_id_to_posts_table.php`
+- `database/seeders/SampleNewsSeeder.php`
 - `resources/views/portal/search.blade.php`
 - `resources/views/portal/home.blade.php`
 - `resources/views/portal/post.blade.php`

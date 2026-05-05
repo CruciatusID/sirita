@@ -30,10 +30,10 @@ class PortalController extends Controller
 
         $popularCategories = Category::where('is_active', true)
             ->with('parent')
+            ->whereHas('posts', fn ($query) => $query->published())
             ->withCount([
                 'posts as published_posts_count' => fn ($query) => $query->published(),
             ])
-            ->having('published_posts_count', '>', 0)
             ->orderByDesc('published_posts_count')
             ->orderBy('name')
             ->limit(12)
@@ -64,7 +64,7 @@ class PortalController extends Controller
         $post->increment('views');
 
         return view('portal.post', [
-            'post' => $post->load(['category.parent', 'author', 'unit', 'tags']),
+            'post' => $post->load(['category.parent', 'author', 'editor', 'unit', 'tags']),
             'relatedPosts' => Post::published()
                 ->with('category.parent')
                 ->where('category_id', $post->category_id)

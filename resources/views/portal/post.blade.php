@@ -12,6 +12,11 @@
                 <p>
                     <span class="font-bold text-stone-900">Penulis:</span>
                     {{ $post->author->name }}
+                    @if ($post->editor)
+                        <span class="mx-2 text-stone-400">|</span>
+                        <span class="font-bold text-stone-900">Editor:</span>
+                        {{ $post->editor->name }}
+                    @endif
                 </p>
             </div>
 

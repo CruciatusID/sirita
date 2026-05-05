@@ -10,6 +10,8 @@ use App\Filament\Resources\Posts\Schemas\PostForm;
 use App\Filament\Resources\Posts\Tables\PostsTable;
 use App\Models\Post;
 use BackedEnum;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -37,6 +39,39 @@ class PostResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return PostForm::configure($schema);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with(['category.parent', 'author', 'editor']);
+    }
+
+    public static function getTabs(): array
+    {
+        $counts = Post::query()
+            ->selectRaw('status, count(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
+        $total = Post::query()->count();
+
+        return [
+            'all' => Tab::make('Semua')
+                ->badge((string) $total)
+                ->modifyQueryUsing(fn (Builder $query) => $query),
+            'draft' => Tab::make('Draft')
+                ->badge((string) ($counts['draft'] ?? 0))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'draft')),
+            'review' => Tab::make('Review')
+                ->badge((string) ($counts['review'] ?? 0))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'review')),
+            'published' => Tab::make('Terbit')
+                ->badge((string) ($counts['published'] ?? 0))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'published')),
+            'rejected' => Tab::make('Ditolak')
+                ->badge((string) ($counts['rejected'] ?? 0))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'rejected')),
+        ];
     }
 
     public static function table(Table $table): Table
