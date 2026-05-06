@@ -35,10 +35,10 @@ class PostForm
                 Textarea::make('excerpt')
                     ->label('Ringkasan')
                     ->rows(3),
-                RichContentEditor::make('content', 'Isi Berita', 'posts/content')
+                RichContentEditor::make('content', 'Isi Berita', 'media')
                     ->required()
                     ->columnSpanFull(),
-                MediaImageSelect::make('featured_image', 'Gambar Utama', 'posts/featured')
+                MediaImageSelect::make('featured_image', 'Gambar Utama')
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
                         if (blank($state)) {
@@ -124,7 +124,7 @@ class PostForm
                 Textarea::make('seo_description')
                     ->label('SEO Description')
                     ->rows(3),
-                MediaImageSelect::make('og_image', 'Gambar Share', 'posts/og'),
+                MediaImageSelect::make('og_image', 'Gambar Share'),
             ]);
     }
 }

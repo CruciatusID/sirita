@@ -20,7 +20,7 @@ class BannerForm
                 FileUpload::make('image')
                     ->label('Gambar')
                     ->image()
-                    ->directory('banners')
+                    ->directory('media')
                     ->imageEditor()
                     ->maxSize(300)
                     ->required(),

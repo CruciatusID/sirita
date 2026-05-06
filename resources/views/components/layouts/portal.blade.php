@@ -32,12 +32,16 @@
 </head>
 <body class="min-h-screen bg-stone-50 text-stone-900 antialiased">
     <header class="sticky top-0 z-50 border-b border-stone-200 bg-white/90 backdrop-blur-md">
+        @php
+            $headerDate = ucfirst(now()->locale('id')->translatedFormat('l, j F Y'));
+        @endphp
+
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3">
             <a href="{{ route('home') }}" class="group flex items-center gap-3">
                 <img src="{{ asset('images/logo-kemenag.png') }}" alt="Logo Kemenag" class="h-11 w-auto transition-transform group-hover:scale-105">
-                <span>
+                <span class="min-w-0">
                     <span class="block text-xl font-black leading-none tracking-tight text-emerald-950">SIRITA</span>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-stone-500">Sistem Informasi Religi Tana Toraja</span>
+                    <span class="mt-1 block max-w-[11rem] text-[10px] font-bold uppercase leading-tight tracking-wider text-stone-500 sm:max-w-none">Sistem Informasi Religi Tana Toraja</span>
                 </span>
             </a>
             <button type="button" class="grid h-10 w-10 place-items-center rounded-full border border-stone-200 text-stone-700 md:hidden" data-mobile-menu-button aria-controls="portal-mobile-menu" aria-expanded="false" aria-label="Buka menu navigasi">
@@ -47,6 +51,9 @@
                     <path d="M4 17h16" />
                 </svg>
             </button>
+            <div class="hidden min-w-max text-center text-sm font-bold text-stone-500 lg:block">
+                {{ $headerDate }}
+            </div>
             <nav class="hidden items-center gap-1 text-sm font-bold text-stone-600 md:flex">
                 <a class="rounded-full px-4 py-2 transition-colors hover:bg-emerald-50 hover:text-emerald-800 {{ request()->routeIs('home') ? 'bg-emerald-50 text-emerald-800' : '' }}" href="{{ route('home') }}">Beranda</a>
                 <a class="rounded-full px-4 py-2 transition-colors hover:bg-emerald-50 hover:text-emerald-800" href="{{ route('pages.show', 'profil-kantor') }}">Profil</a>

@@ -3,12 +3,14 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Media;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class SampleNewsSeeder extends Seeder
@@ -130,12 +132,15 @@ class SampleNewsSeeder extends Seeder
         }
 
         // Gambar dummy berita diambil dari folder `contohgambar` lalu disalin
-        // ke `storage/app/public/posts/featured` dan `storage/app/public/posts/og`
-        // dengan nama tetap `dummy-news-01.jpg` sampai `dummy-news-09.jpg`.
+        // ke `storage/app/public/media` dengan nama tetap `dummy-news-01.jpg`
+        // sampai `dummy-news-09.jpg`.
         // Pemetaan gambar disusun agar lebih relevan dengan isi berita:
         // 01 rapat koordinasi, 02 pembinaan ASN, 03 dialog lintas iman,
         // 04 literasi digital madrasah, 05 layanan nikah, 06 pembinaan siswa,
         // 07 remaja dan game, 08 keluarga dan game, 09 panduan bijak game.
+        $this->copyDummyNewsImages();
+        $this->syncMediaFolder();
+
         $posts = [
             [
                 'title' => 'Rapat Koordinasi Awal Tahun di Kantor Kemenag Tana Toraja',
@@ -149,8 +154,8 @@ class SampleNewsSeeder extends Seeder
                 'author_email' => 'ahmad.rizal@sirita.local',
                 'editor_email' => 'mira.damayanti@sirita.local',
                 'tags' => ['rapat-koordinasi', 'pembinaan-asn', 'pelayanan-publik', 'zona-integritas'],
-                'featured_image' => 'posts/featured/dummy-news-01.jpg',
-                'og_image' => 'posts/og/dummy-news-01.jpg',
+                'featured_image' => 'media/dummy-news-01.jpg',
+                'og_image' => 'media/dummy-news-01.jpg',
                 'published_at' => now()->subDays(8),
                 'views' => 184,
                 'likes_count' => 27,
@@ -168,8 +173,8 @@ class SampleNewsSeeder extends Seeder
                 'author_email' => 'ahmad.rizal@sirita.local',
                 'editor_email' => 'rudi.hartono@sirita.local',
                 'tags' => ['pembinaan-asn', 'pembinaan', 'bimas-islam', 'layanan-publik'],
-                'featured_image' => 'posts/featured/dummy-news-02.jpg',
-                'og_image' => 'posts/og/dummy-news-02.jpg',
+                'featured_image' => 'media/dummy-news-02.jpg',
+                'og_image' => 'media/dummy-news-02.jpg',
                 'published_at' => now()->subDays(6),
                 'views' => 156,
                 'likes_count' => 18,
@@ -187,8 +192,8 @@ class SampleNewsSeeder extends Seeder
                 'author_email' => 'fransiskus.toding@sirita.local',
                 'editor_email' => 'sinta.wulandari@sirita.local',
                 'tags' => ['kerukunan-umat', 'moderasi-beragama', 'sosialisasi'],
-                'featured_image' => 'posts/featured/dummy-news-03.jpg',
-                'og_image' => 'posts/og/dummy-news-03.jpg',
+                'featured_image' => 'media/dummy-news-03.jpg',
+                'og_image' => 'media/dummy-news-03.jpg',
                 'published_at' => now()->subDays(5),
                 'views' => 131,
                 'likes_count' => 22,
@@ -206,8 +211,8 @@ class SampleNewsSeeder extends Seeder
                 'author_email' => 'riska.amelia@sirita.local',
                 'editor_email' => 'dewi.lestari@sirita.local',
                 'tags' => ['madrasah', 'digitalisasi', 'pendidikan-islam', 'kegiatan'],
-                'featured_image' => 'posts/featured/dummy-news-04.jpg',
-                'og_image' => 'posts/og/dummy-news-04.jpg',
+                'featured_image' => 'media/dummy-news-04.jpg',
+                'og_image' => 'media/dummy-news-04.jpg',
                 'published_at' => now()->subDays(4),
                 'views' => 143,
                 'likes_count' => 16,
@@ -225,8 +230,8 @@ class SampleNewsSeeder extends Seeder
                 'author_email' => 'ahmad.rizal@sirita.local',
                 'editor_email' => 'mira.damayanti@sirita.local',
                 'tags' => ['kua', 'layanan-publik', 'kegiatan', 'pelayanan-publik'],
-                'featured_image' => 'posts/featured/dummy-news-05.jpg',
-                'og_image' => 'posts/og/dummy-news-05.jpg',
+                'featured_image' => 'media/dummy-news-05.jpg',
+                'og_image' => 'media/dummy-news-05.jpg',
                 'published_at' => now()->subDays(3),
                 'views' => 204,
                 'likes_count' => 31,
@@ -244,8 +249,8 @@ class SampleNewsSeeder extends Seeder
                 'author_email' => 'riska.amelia@sirita.local',
                 'editor_email' => 'dewi.lestari@sirita.local',
                 'tags' => ['madrasah', 'pembinaan', 'kegiatan'],
-                'featured_image' => 'posts/featured/dummy-news-06.jpg',
-                'og_image' => 'posts/og/dummy-news-06.jpg',
+                'featured_image' => 'media/dummy-news-06.jpg',
+                'og_image' => 'media/dummy-news-06.jpg',
                 'published_at' => now()->subDays(2),
                 'views' => 117,
                 'likes_count' => 14,
@@ -263,8 +268,8 @@ class SampleNewsSeeder extends Seeder
                 'author_email' => 'sinta.wulandari@sirita.local',
                 'editor_email' => null,
                 'tags' => ['game-online', 'remaja', 'etika-digital', 'keseimbangan-ibadah'],
-                'featured_image' => 'posts/featured/dummy-news-07.jpg',
-                'og_image' => 'posts/og/dummy-news-07.jpg',
+                'featured_image' => 'media/dummy-news-07.jpg',
+                'og_image' => 'media/dummy-news-07.jpg',
                 'published_at' => now()->subDay(),
                 'views' => 98,
                 'likes_count' => 12,
@@ -282,8 +287,8 @@ class SampleNewsSeeder extends Seeder
                 'author_email' => 'rudi.hartono@sirita.local',
                 'editor_email' => null,
                 'tags' => ['game-online', 'keluarga', 'etika-digital', 'moderasi-beragama'],
-                'featured_image' => 'posts/featured/dummy-news-08.jpg',
-                'og_image' => 'posts/og/dummy-news-08.jpg',
+                'featured_image' => 'media/dummy-news-08.jpg',
+                'og_image' => 'media/dummy-news-08.jpg',
                 'published_at' => now()->subHours(18),
                 'views' => 86,
                 'likes_count' => 10,
@@ -301,8 +306,8 @@ class SampleNewsSeeder extends Seeder
                 'author_email' => 'mira.damayanti@sirita.local',
                 'editor_email' => null,
                 'tags' => ['game-online', 'etika-digital', 'layanan-publik', 'remaja'],
-                'featured_image' => 'posts/featured/dummy-news-09.jpg',
-                'og_image' => 'posts/og/dummy-news-09.jpg',
+                'featured_image' => 'media/dummy-news-09.jpg',
+                'og_image' => 'media/dummy-news-09.jpg',
                 'published_at' => now()->subHours(10),
                 'views' => 77,
                 'likes_count' => 8,
@@ -344,5 +349,50 @@ class SampleNewsSeeder extends Seeder
 
             $post->tags()->sync($tagIds);
         }
+    }
+
+    private function copyDummyNewsImages(): void
+    {
+        $sourceImages = collect(['jpg', 'jpeg', 'png', 'webp'])
+            ->flatMap(fn (string $extension): array => glob(base_path("contohgambar/*.{$extension}")) ?: [])
+            ->sort()
+            ->values();
+
+        if ($sourceImages->count() < 9) {
+            $this->command?->warn('Folder contohgambar tidak berisi 9 gambar dummy berita.');
+
+            return;
+        }
+
+        Storage::disk('public')->makeDirectory('media');
+
+        $sourceImages->take(9)->each(function (string $sourcePath, int $index): void {
+            $fileNumber = str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT);
+            $contents = file_get_contents($sourcePath);
+
+            if ($contents === false) {
+                $this->command?->warn("Gagal membaca gambar dummy: {$sourcePath}");
+
+                return;
+            }
+
+            Storage::disk('public')->put("media/dummy-news-{$fileNumber}.jpg", $contents);
+        });
+    }
+
+    private function syncMediaFolder(): void
+    {
+        collect(Storage::disk('public')->files('media'))
+            ->filter(fn (string $path): bool => preg_match('/\.(jpe?g|png|webp|gif)$/i', $path) === 1)
+            ->each(function (string $path): void {
+                Media::updateOrCreate(
+                    ['path' => $path],
+                    [
+                        'filename' => basename($path),
+                        'mime_type' => Storage::disk('public')->mimeType($path),
+                        'size' => Storage::disk('public')->size($path),
+                    ],
+                );
+            });
     }
 }

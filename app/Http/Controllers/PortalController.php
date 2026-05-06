@@ -104,6 +104,28 @@ class PortalController extends Controller
         return back();
     }
 
+    public function shareToWhatsApp(Post $post): RedirectResponse
+    {
+        abort_unless($post->status === 'published' && ($post->published_at === null || $post->published_at->isPast()), 404);
+
+        $post->increment('shares_count');
+
+        $text = "{$post->title}\n\nBaca selengkapnya:\n".route('posts.show', $post);
+
+        return redirect()->away('https://api.whatsapp.com/send?'.http_build_query(['text' => $text]));
+    }
+
+    public function shareToFacebook(Post $post): RedirectResponse
+    {
+        abort_unless($post->status === 'published' && ($post->published_at === null || $post->published_at->isPast()), 404);
+
+        $post->increment('shares_count');
+
+        return redirect()->away('https://www.facebook.com/sharer/sharer.php?'.http_build_query([
+            'u' => route('posts.show', $post),
+        ]));
+    }
+
     public function category(Category $category): View
     {
         return view('portal.archive', [

@@ -52,8 +52,6 @@
 
         <footer class="mt-12 border-t border-stone-100 pt-8">
             <div class="mb-8 flex flex-wrap items-center justify-end gap-3">
-                <p class="hidden rounded-full bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-800" data-share-status role="status" aria-live="polite"></p>
-
                 <div class="flex gap-3">
                     <form method="POST" action="{{ route('posts.like', $post) }}">
                         @csrf
@@ -65,18 +63,17 @@
                         </button>
                     </form>
 
-                    <form method="POST" action="{{ route('posts.share', $post) }}" data-share-form data-share-title="{{ $post->title }}" data-share-url="{{ route('posts.show', $post) }}">
-                        @csrf
-                        <button type="submit" class="grid h-11 w-11 place-items-center rounded-full border border-stone-200 bg-white text-stone-700 shadow-lg shadow-stone-900/5 transition-all hover:-translate-y-0.5 hover:border-emerald-700 hover:text-emerald-800" title="Bagikan" aria-label="Bagikan berita ini">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="18" cy="5" r="3" />
-                                <circle cx="6" cy="12" r="3" />
-                                <circle cx="18" cy="19" r="3" />
-                                <path d="m8.59 13.51 6.83 3.98" />
-                                <path d="m15.41 6.51-6.82 3.98" />
-                            </svg>
-                        </button>
-                    </form>
+                    <a href="{{ route('posts.share.whatsapp', $post) }}" target="_blank" rel="noopener noreferrer" class="grid h-11 w-11 place-items-center rounded-full bg-[#25D366] text-white shadow-lg shadow-emerald-900/10 transition-all hover:-translate-y-0.5 hover:bg-[#1ebe5d]" title="Bagikan ke WhatsApp" aria-label="Bagikan berita ini ke WhatsApp">
+                        <svg class="h-5 w-5" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+                            <path d="M16.01 3.2A12.66 12.66 0 0 0 5.02 22.13L3.2 28.8l6.83-1.79A12.66 12.66 0 1 0 16.01 3.2Zm0 23.1a10.5 10.5 0 0 1-5.36-1.47l-.38-.23-4.05 1.06 1.08-3.94-.25-.4A10.5 10.5 0 1 1 16 26.3Zm5.75-7.86c-.31-.16-1.84-.91-2.13-1.01-.29-.11-.5-.16-.71.16-.21.31-.82 1.01-1.01 1.22-.18.21-.37.24-.68.08-.31-.16-1.32-.49-2.51-1.55-.93-.83-1.56-1.86-1.74-2.17-.18-.31-.02-.48.14-.64.14-.14.31-.37.47-.55.16-.18.21-.31.31-.52.11-.21.05-.39-.03-.55-.08-.16-.71-1.71-.97-2.34-.26-.62-.52-.53-.71-.54h-.6c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62s1.13 3.04 1.29 3.25c.16.21 2.22 3.39 5.38 4.75.75.32 1.34.52 1.8.66.76.24 1.45.21 1.99.13.61-.09 1.84-.75 2.1-1.48.26-.73.26-1.36.18-1.49-.08-.13-.29-.21-.61-.37Z" />
+                        </svg>
+                    </a>
+
+                    <a href="{{ route('posts.share.facebook', $post) }}" target="_blank" rel="noopener noreferrer" class="grid h-11 w-11 place-items-center rounded-full bg-[#1877F2] text-white shadow-lg shadow-blue-900/10 transition-all hover:-translate-y-0.5 hover:bg-[#166fe5]" title="Bagikan ke Facebook" aria-label="Bagikan berita ini ke Facebook">
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M14 8.5h2.5V5.1c-.43-.06-1.9-.19-3.62-.19-3.58 0-6.03 2.25-6.03 6.38v3.8H3v3.8h3.85V24h4.72v-5.11h3.69l.59-3.8h-4.28v-3.42c0-1.1.3-1.85 1.89-1.85H16V8.5h-2Z" />
+                        </svg>
+                    </a>
                 </div>
             </div>
 
@@ -117,85 +114,4 @@
         </section>
     @endif
 
-    <script>
-        function copyTextToClipboard(text) {
-            if (navigator.clipboard && window.isSecureContext) {
-                return navigator.clipboard.writeText(text);
-            }
-
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.setAttribute('readonly', '');
-            textArea.style.position = 'fixed';
-            textArea.style.opacity = '0';
-            document.body.appendChild(textArea);
-            textArea.select();
-
-            try {
-                document.execCommand('copy');
-
-                return Promise.resolve();
-            } catch (error) {
-                return Promise.reject(error);
-            } finally {
-                document.body.removeChild(textArea);
-            }
-        }
-
-        function showShareStatus(message) {
-            const status = document.querySelector('[data-share-status]');
-
-            if (! status) {
-                return;
-            }
-
-            status.textContent = message;
-            status.classList.remove('hidden');
-
-            window.clearTimeout(status.dataset.timeoutId);
-            status.dataset.timeoutId = window.setTimeout(() => {
-                status.classList.add('hidden');
-                status.textContent = '';
-            }, 2500);
-        }
-
-        document.querySelectorAll('[data-share-form]').forEach((form) => {
-            form.addEventListener('submit', async (event) => {
-                event.preventDefault();
-
-                const shareUrl = form.dataset.shareUrl;
-                const shareTitle = form.dataset.shareTitle;
-                const token = document.querySelector('meta[name="csrf-token"]')?.content;
-
-                try {
-                    if (navigator.share) {
-                        await navigator.share({ title: shareTitle, url: shareUrl });
-                        showShareStatus('Dialog bagikan dibuka');
-                    } else {
-                        await copyTextToClipboard(shareUrl);
-                        showShareStatus('Link berita disalin');
-                    }
-
-                    const response = await fetch(form.action, {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': token,
-                        },
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        const counter = document.querySelector('[data-share-count]');
-
-                        if (counter && data.shares_count !== undefined) {
-                            counter.textContent = new Intl.NumberFormat('id-ID').format(data.shares_count);
-                        }
-                    }
-                } catch (error) {
-                    showShareStatus('Gagal membagikan link');
-                }
-            });
-        });
-    </script>
 </x-layouts.portal>
