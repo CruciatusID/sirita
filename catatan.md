@@ -224,17 +224,18 @@ Dummy data berita:
    - Pendidikan Islam
 2. Ditambahkan 6 dummy berita dengan kategori dan tag yang berbeda-beda.
 3. Setiap berita memakai gambar placeholder yang bisa diganti nanti:
-   - `posts/featured/dummy-news-01.jpg`
-   - `posts/featured/dummy-news-02.jpg`
-   - `posts/featured/dummy-news-03.jpg`
-   - `posts/featured/dummy-news-04.jpg`
-   - `posts/featured/dummy-news-05.jpg`
-   - `posts/featured/dummy-news-06.jpg`
-   - `posts/featured/dummy-news-07.jpg`
-   - `posts/featured/dummy-news-08.jpg`
-   - `posts/featured/dummy-news-09.jpg`
+   - `media/dummy-news-01.jpg`
+   - `media/dummy-news-02.jpg`
+   - `media/dummy-news-03.jpg`
+   - `media/dummy-news-04.jpg`
+   - `media/dummy-news-05.jpg`
+   - `media/dummy-news-06.jpg`
+   - `media/dummy-news-07.jpg`
+   - `media/dummy-news-08.jpg`
+   - `media/dummy-news-09.jpg`
    - file sumber gambar ada di folder `contohgambar`
-   - saat seed ulang di komputer lain, salin gambar itu ke `storage/app/public/posts/featured` dan `storage/app/public/posts/og` dengan nama yang sama
+   - saat seed ulang di komputer lain, `SampleNewsSeeder` menyalin gambar itu ke `storage/app/public/media` dengan nama yang sama
+   - `SampleNewsSeeder` juga menyinkronkan file di folder `media` ke tabel `media`, supaya tampil di menu Media
    - pemetaan tema saat ini: 01 rapat koordinasi, 02 pembinaan ASN, 03 dialog lintas iman, 04 literasi digital madrasah, 05 layanan nikah, 06 pembinaan siswa, 07 remaja dan game, 08 keluarga dan game, 09 panduan bijak game
 4. Data editor berita diisi otomatis lewat relasi `editor_user_id`, supaya detail berita bisa menampilkan `Penulis` dan `Editor` tanpa field manual di form.
 5. List berita admin sekarang punya tab cepat `Semua / Draft / Review / Terbit / Ditolak`.
@@ -246,6 +247,34 @@ Pembatasan menu Filament berdasarkan role:
 2. Admin Humas: Berita, Media, Kategori, Tag, Unit Kerja, Halaman, Banner.
 3. Editor: Berita, Media, Kategori, Tag.
 4. Kontributor: Berita dan Media.
+
+Progress terbaru:
+
+1. Penyimpanan gambar disederhanakan ke satu folder publik `storage/app/public/media`:
+   - gambar utama berita,
+   - gambar share/OG,
+   - gambar isi berita rich editor,
+   - gambar banner.
+2. Share detail berita diganti menjadi tombol WhatsApp dan Facebook:
+   - WhatsApp memakai format `Judul Berita`, baris kosong, `Baca selengkapnya:`, lalu link berita,
+   - Facebook memakai `https://www.facebook.com/sharer/sharer.php?u=...`,
+   - keduanya tetap menaikkan counter `shares_count`.
+3. Header portal menampilkan tanggal hari ini di desktop dan teks logo mobile dirapikan.
+4. Footer portal diperbarui:
+   - alamat kantor: `Jl. Pongtiku No. 106, Makale, Tana Toraja`,
+   - copyright,
+   - keterangan `Dikelola oleh HDI Kemenag Tana Toraja`,
+   - tautan resmi bersusun dengan ikon: website utama, halaman Kemenag Sulsel, Instagram, dan Facebook.
+5. Dashboard Super Admin Filament mulai dikembangkan:
+   - `FilamentInfoWidget` bawaan dihapus,
+   - ditambahkan widget ringkasan portal,
+   - ditambahkan tabel berita menunggu review,
+   - ditambahkan tabel berita terpopuler.
+6. Ikon navigasi resource Filament diganti agar lebih mudah dipindai:
+   - Berita, Kategori, Tag, Unit Kerja, Halaman, Banner, Media, dan Pengguna memakai Heroicons yang lebih spesifik.
+7. Footer sidebar admin ditambahkan di kiri bawah:
+   - copyright SIRITA,
+   - `Dikelola oleh HDI Kemenag Tana Toraja`.
 
 File penting yang ditambahkan/diubah:
 
