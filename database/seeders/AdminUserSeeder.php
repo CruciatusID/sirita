@@ -17,9 +17,10 @@ class AdminUserSeeder extends Seeder
         $unit = Unit::where('slug', 'kantor-kemenag-tana-toraja')->first();
 
         $user = User::firstOrCreate(
-            ['email' => 'admin@sirita.local'],
+            ['username' => 'admin'],
             [
                 'name' => 'Super Admin SIRITA',
+                'email' => null,
                 'password' => Hash::make('password'),
                 'unit_id' => $unit?->id,
                 'status' => 'active',

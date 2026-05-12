@@ -14,12 +14,22 @@ class UserForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nama')
                     ->required(),
+                TextInput::make('username')
+                    ->label('Username')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->alphaDash()
+                    ->maxLength(255),
                 TextInput::make('email')
-                    ->label('Email address')
+                    ->label('Email')
                     ->email()
-                    ->required(),
-                DateTimePicker::make('email_verified_at'),
+                    ->unique(ignoreRecord: true)
+                    ->maxLength(255),
+                DateTimePicker::make('email_verified_at')
+                    ->label('Email Terverifikasi')
+                    ->visible(fn ($get): bool => filled($get('email'))),
                 TextInput::make('password')
                     ->password()
                     ->revealable()

@@ -16,13 +16,21 @@ class UsersTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nama')
+                    ->searchable(),
+                TextColumn::make('username')
+                    ->label('Username')
                     ->searchable(),
                 TextColumn::make('email')
-                    ->label('Email address')
-                    ->searchable(),
+                    ->label('Email')
+                    ->placeholder('-')
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('email_verified_at')
+                    ->label('Email Terverifikasi')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('unit.name')
                     ->label('Unit')
                     ->sortable(),
