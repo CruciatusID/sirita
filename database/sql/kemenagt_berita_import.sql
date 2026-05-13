@@ -313,6 +313,7 @@ CREATE TABLE `activity_log` (
   `causer_id` BIGINT UNSIGNED NULL,
   `attribute_changes` JSON NULL,
   `properties` JSON NULL,
+  `batch_uuid` CHAR(36) NULL,
   `created_at` TIMESTAMP NULL DEFAULT NULL,
   `updated_at` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`id`),

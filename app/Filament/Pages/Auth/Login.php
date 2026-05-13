@@ -10,6 +10,11 @@ use Illuminate\Validation\ValidationException;
 
 class Login extends BaseLogin
 {
+    public function getSubheading(): string | \Illuminate\Contracts\Support\Htmlable | null
+    {
+        return null;
+    }
+
     protected function getEmailFormComponent(): Component
     {
         return TextInput::make('username')

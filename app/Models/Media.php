@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
-#[Fillable(['filename', 'caption', 'path', 'mime_type', 'size', 'uploaded_by'])]
 class Media extends Model
 {
+    protected $fillable = ['filename', 'caption', 'path', 'mime_type', 'size', 'uploaded_by'];
+
     protected static function booted(): void
     {
         static::saving(function (Media $media): void {

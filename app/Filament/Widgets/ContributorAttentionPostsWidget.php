@@ -11,7 +11,7 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 
-class ReviewQueueWidget extends TableWidget
+class ContributorAttentionPostsWidget extends TableWidget
 {
     protected static ?int $sort = -1;
 
@@ -19,33 +19,36 @@ class ReviewQueueWidget extends TableWidget
 
     public static function canView(): bool
     {
-        return AdminAccess::hasAnyRole(AdminAccess::EDITORIAL);
+        return AdminAccess::hasAnyRole(['Kontributor'])
+            && ! AdminAccess::hasAnyRole(AdminAccess::EDITORIAL);
     }
 
     public function table(Table $table): Table
     {
         return $table
-            ->heading('Berita Menunggu Review')
-            ->description('Daftar naskah yang perlu diperiksa sebelum diterbitkan.')
+            ->heading('Naskah Perlu Ditindaklanjuti')
+            ->description('Draft belum terkirim dan naskah ditolak akan muncul di sini.')
             ->query(fn (): Builder => Post::query()
-                ->with(['category', 'author', 'unit'])
-                ->where('status', 'review')
+                ->with(['category'])
+                ->where('user_id', auth()->id())
+                ->whereIn('status', ['draft', 'rejected'])
                 ->latest('updated_at'))
             ->columns([
                 TextColumn::make('title')
                     ->label('Judul')
                     ->searchable()
-                    ->limit(55),
-                TextColumn::make('author.name')
-                    ->label('Penulis')
-                    ->placeholder('-'),
+                    ->limit(60),
                 TextColumn::make('category.name')
                     ->label('Kategori')
                     ->placeholder('-'),
-                TextColumn::make('unit.name')
-                    ->label('Unit')
-                    ->placeholder('-')
-                    ->limit(28),
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'draft' => 'warning',
+                        'rejected' => 'danger',
+                        default => 'gray',
+                    }),
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')
                     ->since()

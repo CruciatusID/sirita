@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasGeneratedSlug;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,29 +10,30 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-#[Fillable([
-    'title',
-    'slug',
-    'excerpt',
-    'content',
-    'featured_image',
-    'featured_image_caption',
-    'category_id',
-    'user_id',
-    'editor_user_id',
-    'unit_id',
-    'status',
-    'published_at',
-    'seo_title',
-    'seo_description',
-    'og_image',
-    'views',
-    'likes_count',
-    'shares_count',
-])]
 class Post extends Model
 {
     use HasGeneratedSlug, LogsActivity;
+
+    protected $fillable = [
+        'title',
+        'slug',
+        'excerpt',
+        'content',
+        'featured_image',
+        'featured_image_caption',
+        'category_id',
+        'user_id',
+        'editor_user_id',
+        'unit_id',
+        'status',
+        'published_at',
+        'seo_title',
+        'seo_description',
+        'og_image',
+        'views',
+        'likes_count',
+        'shares_count',
+    ];
 
     protected function casts(): array
     {
@@ -52,7 +52,7 @@ class Post extends Model
         return LogOptions::defaults()
             ->logFillable()
             ->logOnlyDirty()
-            ->dontLogEmptyChanges();
+            ->dontSubmitEmptyLogs();
     }
 
     public function category(): BelongsTo

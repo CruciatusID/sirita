@@ -43,19 +43,23 @@ class PostResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->with(['category.parent', 'author', 'editor']);
+        $query = parent::getEloquentQuery()->with(['category.parent', 'author', 'editor']);
+
+        return static::applyPostVisibility($query);
     }
 
     public static function getTabs(): array
     {
-        $counts = Post::query()
+        $baseQuery = static::applyPostVisibility(Post::query());
+
+        $counts = (clone $baseQuery)
             ->selectRaw('status, count(*) as total')
             ->groupBy('status')
             ->pluck('total', 'status');
 
-        $total = Post::query()->count();
+        $total = (clone $baseQuery)->count();
 
-        return [
+        $tabs = [
             'all' => Tab::make('Semua')
                 ->badge((string) $total)
                 ->modifyQueryUsing(fn (Builder $query) => $query),
@@ -72,6 +76,25 @@ class PostResource extends Resource
                 ->badge((string) ($counts['rejected'] ?? 0))
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'rejected')),
         ];
+
+        if (AdminAccess::hasAnyRole(['Editor']) && ! AdminAccess::hasAnyRole(AdminAccess::CONTENT_MANAGERS)) {
+            unset($tabs['draft']);
+        }
+
+        return $tabs;
+    }
+
+    protected static function applyPostVisibility(Builder $query): Builder
+    {
+        if (AdminAccess::hasAnyRole(AdminAccess::CONTENT_MANAGERS)) {
+            return $query;
+        }
+
+        if (AdminAccess::hasAnyRole(['Editor'])) {
+            return $query->where('status', '!=', 'draft');
+        }
+
+        return $query->where('user_id', auth()->id());
     }
 
     public static function table(Table $table): Table

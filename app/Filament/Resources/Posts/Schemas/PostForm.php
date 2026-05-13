@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Posts\Schemas;
 
+use App\Filament\Support\AdminAccess;
 use App\Filament\Support\MediaImageSelect;
 use App\Filament\Support\RichContentEditor;
 use App\Filament\Support\SlugFields;
@@ -107,12 +108,17 @@ class PostForm
                     ]),
                 Select::make('status')
                     ->label('Status')
-                    ->options([
-                        'draft' => 'Draft',
-                        'review' => 'Menunggu Review',
-                        'published' => 'Terbit',
-                        'rejected' => 'Ditolak',
-                    ])
+                    ->options(fn (): array => AdminAccess::hasAnyRole(AdminAccess::EDITORIAL)
+                        ? [
+                            'draft' => 'Draft',
+                            'review' => 'Menunggu Review',
+                            'published' => 'Terbit',
+                            'rejected' => 'Ditolak',
+                        ]
+                        : [
+                            'draft' => 'Draft',
+                            'review' => 'Kirim untuk Review',
+                        ])
                     ->default('draft')
                     ->required(),
                 DateTimePicker::make('published_at')

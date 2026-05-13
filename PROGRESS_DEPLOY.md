@@ -11,6 +11,28 @@ Tanggal: 2026-05-12
 - Zip deploy untuk hosting sudah dibuat lokal di `_deploy/sirita-hosting-upload.zip`.
 - Hosting diarahkan ke `public_html/sirita/public`.
 
+## Update 2026-05-13
+
+- Login admin production berhasil setelah hash bcrypt admin diperbaiki di database hosting.
+- Extension hosting yang wajib dipastikan aktif: `intl`, `zip`, `fileinfo`, `mbstring`, `openssl`, `xml`, `ctype`, dan `tokenizer`. `pdo_mysql skipped as conflicting` aman selama aplikasi sudah bisa query MySQL.
+- Struktur `activity_log` hosting perlu kolom `batch_uuid` untuk kompatibilitas Spatie Activitylog versi terpasang.
+- Model Eloquent diubah dari PHP attribute `#[Fillable]`/`#[Hidden]` ke properti standar `$fillable`/`$hidden` agar mass assignment stabil di hosting.
+- Method activity log di `Post` disesuaikan dari `dontLogEmptyChanges()` ke `dontSubmitEmptyLogs()`.
+- Alur berita diperbaiki:
+  - Kontributor hanya bisa `Draft` atau `Kirim untuk Review`.
+  - Kontributor hanya melihat berita miliknya sendiri.
+  - Editor tidak melihat draft kontributor; editor baru melihat berita status `review`, `published`, atau `rejected`.
+  - Super Admin dan Admin Humas tetap melihat semua berita.
+- Dashboard ditambah ringkasan role:
+  - Kontributor melihat jumlah draft, review, terbit, dan ditolak miliknya.
+  - Editor melihat antrean review, terbit, dan ditolak.
+  - Antrean review tersedia untuk role editorial.
+- Halaman `Profil Saya` ditambahkan untuk semua user agar bisa ubah nama tampilan, email, dan password sendiri.
+- Form pengguna menambahkan `Konfirmasi Password`.
+- Registrasi kontributor via URL langsung ditambahkan di `/admin/daftar-kontributor`; tidak ada tombol daftar di halaman login.
+- Bug Firefox di dashboard setelah navigasi balik dari menu lain ditangani dengan reset scroll khusus Firefox pada URL `/admin`.
+- Artifact zip lokal di `_deploy/` dibuat hanya untuk upload manual hosting dan tidak dimasukkan ke git.
+
 ## Login Admin Awal
 
 ```text
@@ -28,7 +50,9 @@ jalankan SQL ini di phpMyAdmin:
 
 ```sql
 UPDATE `users`
-SET `password` = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi'
+SET `password` = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    `status` = 'active',
+    `updated_at` = NOW()
 WHERE `username` = 'admin';
 ```
 
@@ -46,6 +70,36 @@ Nilai benar:
 password diawali: $2y$10$
 password_length: 60
 ```
+
+## SQL Patch Hosting 2026-05-13
+
+Jika activity log error `Unknown column 'batch_uuid'`, jalankan:
+
+```sql
+ALTER TABLE `activity_log`
+ADD COLUMN `batch_uuid` CHAR(36) NULL AFTER `properties`;
+```
+
+Jika tabel `posts` belum sesuai kode terbaru, pastikan kolom berikut ada:
+
+```sql
+ALTER TABLE `posts`
+ADD COLUMN `featured_image_caption` VARCHAR(255) NULL AFTER `featured_image`;
+
+ALTER TABLE `posts`
+ADD COLUMN `editor_user_id` BIGINT UNSIGNED NULL AFTER `user_id`;
+
+ALTER TABLE `posts`
+ADD COLUMN `editor_name` VARCHAR(255) NULL AFTER `editor_user_id`;
+
+ALTER TABLE `posts`
+ADD COLUMN `likes_count` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `views`;
+
+ALTER TABLE `posts`
+ADD COLUMN `shares_count` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `likes_count`;
+```
+
+Jika kolom sudah ada, phpMyAdmin akan menampilkan `Duplicate column name`; itu bisa diabaikan untuk kolom tersebut.
 
 ## Catatan Hosting
 

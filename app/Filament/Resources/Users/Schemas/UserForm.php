@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Users\Schemas;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class UserForm
@@ -31,10 +32,19 @@ class UserForm
                     ->label('Email Terverifikasi')
                     ->visible(fn ($get): bool => filled($get('email'))),
                 TextInput::make('password')
+                    ->label('Password')
                     ->password()
                     ->revealable()
                     ->required(fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(fn (?string $state): bool => filled($state)),
+                    ->dehydrated(fn (?string $state): bool => filled($state))
+                    ->same('password_confirmation'),
+                TextInput::make('password_confirmation')
+                    ->label('Konfirmasi Password')
+                    ->password()
+                    ->revealable()
+                    ->required(fn (Get $get): bool => filled($get('password')))
+                    ->visible(fn (Get $get): bool => filled($get('password')))
+                    ->dehydrated(false),
                 Select::make('unit_id')
                     ->label('Unit Kerja')
                     ->relationship('unit', 'name')

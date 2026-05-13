@@ -21,8 +21,13 @@ class EditPost extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $user = auth()->user();
+        $isEditorial = AdminAccess::hasAnyRole(AdminAccess::EDITORIAL);
 
-        if ($user && $user->hasAnyRole(AdminAccess::EDITORIAL) && (int) $this->record->user_id !== (int) $user->id) {
+        if (! $isEditorial && ! in_array($data['status'] ?? null, ['draft', 'review'], true)) {
+            $data['status'] = $this->record->status === 'published' ? 'review' : 'draft';
+        }
+
+        if ($user && $isEditorial && (int) $this->record->user_id !== (int) $user->id) {
             $data['editor_user_id'] = $user->id;
         } else {
             $data['editor_user_id'] ??= $this->record->editor_user_id;
