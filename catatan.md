@@ -2,12 +2,12 @@
 
 ## Status Saat Ini
 
-SIRITA sudah dibuat sebagai proyek Laravel 13 dengan admin panel Filament dan database MySQL lokal via Herd/phpMyAdmin.
+SIRITA adalah proyek Laravel 12 dengan admin panel Filament dan database MySQL lokal via Herd/phpMyAdmin.
 
-Stack awal:
+Stack saat ini:
 
-- Laravel 13.7
-- PHP 8.3+ (lokal saat ini PHP 8.4)
+- Laravel 12
+- PHP 8.2+
 - MySQL lokal untuk development
 - Filament 5.6 untuk admin panel
 - Blade + Tailwind CSS untuk frontend
@@ -66,7 +66,7 @@ URL admin:
 Akun awal:
 
 ```text
-Email: admin@sirita.local
+Username: admin
 Password: password
 ```
 
@@ -166,13 +166,11 @@ Langkah yang sudah dirapikan:
 7. Lampiran gambar di kolom Isi Berita tersimpan ke storage publik dan tercatat di menu Media.
 8. Gambar yang disisipkan di kolom Isi Berita bisa dipilih dari Media/upload baru dan diberi teks alternatif. Jika ingin mengganti gambar di badan teks, hapus dulu gambar lama lalu sisipkan gambar baru.
 
-Langkah berikutnya yang perlu dirapikan:
+Langkah berikutnya yang masih perlu dirapikan:
 
-1. Tambahkan sample berita agar halaman depan tidak kosong.
-2. Rapikan role permission per menu.
-3. Tambahkan approval workflow untuk Editor dan Kontributor.
-4. Tambahkan dashboard statistik berita.
-5. Rapikan desain frontend sesuai identitas Kemenag.
+1. Rapikan desain frontend sesuai identitas Kemenag.
+2. Evaluasi ulang package `spatie/laravel-backup` jika hosting tidak menyediakan extension `zip`.
+3. Uji ulang penuh fitur admin dan portal di hosting production setelah upload zip terbaru.
 
 ## Progress 2026-05-05
 
@@ -295,6 +293,38 @@ File penting yang ditambahkan/diubah:
 - `resources/js/app.js`
 - `resources/css/app.css`
 
+## Progress 2026-05-13
+
+Penyesuaian production dan deploy:
+
+1. Stack project diturunkan ke PHP 8.2 dan Laravel 12 agar cocok dengan hosting.
+2. Login admin diubah dari email menjadi username.
+3. Email user dibuat opsional untuk kebutuhan SMTP di masa depan.
+4. SQL awal untuk phpMyAdmin dibuat di `database/sql/kemenagt_berita_import.sql`.
+5. Zip deploy lokal dibuat di `_deploy/sirita-hosting-upload.zip` untuk upload manual hosting.
+6. Hosting diarahkan ke `public_html/sirita/public`.
+
+Perbaikan production:
+
+1. Login admin production berhasil setelah hash bcrypt admin diperbaiki di database hosting.
+2. Extension hosting yang perlu aktif: `intl`, `zip`, `fileinfo`, `mbstring`, `openssl`, `xml`, `ctype`, dan `tokenizer`.
+3. Struktur `activity_log` hosting perlu kolom `batch_uuid`.
+4. Model Eloquent diubah dari PHP attribute `#[Fillable]`/`#[Hidden]` ke properti standar `$fillable`/`$hidden`.
+5. Method activity log di `Post` disesuaikan dari `dontLogEmptyChanges()` ke `dontSubmitEmptyLogs()`.
+6. Provider panel admin memakai `ValidateCsrfToken` untuk kompatibilitas Laravel 12.
+
+Alur admin terbaru:
+
+1. Kontributor hanya bisa membuat berita `Draft` atau `Kirim untuk Review`.
+2. Kontributor hanya melihat berita miliknya sendiri.
+3. Editor melihat berita status `review`, `published`, atau `rejected`, tetapi tidak melihat draft kontributor.
+4. Super Admin dan Admin Humas tetap melihat semua berita.
+5. Dashboard menampilkan ringkasan sesuai role.
+6. Halaman `Profil Saya` ditambahkan untuk semua user agar bisa ubah nama tampilan, email, dan password sendiri.
+7. Form pengguna menambahkan `Konfirmasi Password`.
+8. Registrasi kontributor tersedia melalui `/admin/daftar-kontributor`; tombol daftar tidak ditampilkan di halaman login.
+9. Bug Firefox di dashboard setelah navigasi balik dari menu lain ditangani dengan reset scroll khusus Firefox pada URL `/admin`.
+
 Perintah penting saat lanjut di komputer lain:
 
 ```powershell
@@ -309,5 +339,6 @@ npm run dev
 Catatan:
 
 - Jika `npm run dev` sudah berjalan, tidak perlu `npm run build` selama development.
-- Migration terbaru wajib dijalankan karena menambahkan `likes_count` dan `shares_count` di tabel `posts`.
-- Field Editor berita belum ditambahkan. Saat ini detail berita hanya menampilkan Tayang dan Penulis. Jika ingin format `Penulis: ... | Editor: ...`, perlu tambah field/relasi editor di tabel posts dan form admin.
+- Migration wajib dijalankan setelah pull karena ada perubahan struktur tabel `users`, `posts`, dan `activity_log`.
+- Detail berita sudah memiliki relasi editor melalui `editor_user_id`.
+- Catatan deploy dan patch SQL hosting ada di `PROGRESS_DEPLOY.md`.

@@ -6,7 +6,7 @@ SIRITA adalah aplikasi web berita dan administrasi berbasis Laravel + Filament.
 
 Sebelum menjalankan proyek ini di komputer baru, pastikan sudah ada:
 
-- PHP 8.3 atau lebih baru
+- PHP 8.2 atau lebih baru
 - Composer
 - Node.js dan npm
 - MySQL
@@ -83,7 +83,7 @@ Buka:
 Akun awal:
 
 ```text
-Email: admin@sirita.local
+Username: admin
 Password: password
 ```
 
@@ -106,4 +106,3 @@ php artisan migrate --seed
 php artisan storage:link
 npm run build
 ```
-

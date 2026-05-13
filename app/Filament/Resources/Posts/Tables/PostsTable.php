@@ -2,15 +2,16 @@
 
 namespace App\Filament\Resources\Posts\Tables;
 
+use App\Filament\Resources\Posts\PostResource;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class PostsTable
 {
@@ -22,6 +23,22 @@ class PostsTable
                     ->label('Judul')
                     ->searchable()
                     ->limit(60)
+                    ->description(function ($record): HtmlString {
+                        $editUrl = e(PostResource::getUrl('edit', ['record' => $record]));
+                        $links = [
+                            "<a href=\"{$editUrl}\" class=\"text-xs font-medium text-primary-600 hover:underline\">Edit</a>",
+                        ];
+
+                        if ($record->status === 'published' && filled($record->slug)) {
+                            $portalUrl = e(route('posts.show', $record));
+                            $links[] = "<a href=\"{$portalUrl}\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-xs font-medium text-primary-600 hover:underline\">Lihat di Portal</a>";
+
+                            $storyUrl = e(route('admin.posts.story', $record));
+                            $links[] = "<a href=\"{$storyUrl}\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-xs font-medium text-primary-600 hover:underline\">Story IG</a>";
+                        }
+
+                        return new HtmlString(implode('<span class="mx-1 text-gray-300">|</span>', $links));
+                    })
                     ->sortable(),
                 TextColumn::make('category.name')
                     ->label('Kategori')
@@ -97,9 +114,6 @@ class PostsTable
                             );
                     }),
             ], layout: FiltersLayout::AboveContentCollapsible)
-            ->recordActions([
-                EditAction::make(),
-            ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

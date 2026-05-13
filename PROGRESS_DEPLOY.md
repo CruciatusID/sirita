@@ -32,6 +32,22 @@ Tanggal: 2026-05-12
 - Registrasi kontributor via URL langsung ditambahkan di `/admin/daftar-kontributor`; tidak ada tombol daftar di halaman login.
 - Bug Firefox di dashboard setelah navigasi balik dari menu lain ditangani dengan reset scroll khusus Firefox pada URL `/admin`.
 - Artifact zip lokal di `_deploy/` dibuat hanya untuk upload manual hosting dan tidak dimasukkan ke git.
+- Form Berita dirapikan:
+  - Dropdown `Status` di form Berita dihapus.
+  - Buat Berita memakai tombol workflow: `Simpan Draft`, `Kirim untuk Review`, dan `Terbitkan` untuk role editorial.
+  - Ubah Berita memakai tombol workflow sesuai role/status: `Simpan Perubahan`, `Kirim ke Review`, `Terbitkan`, `Tolak`, dan `Kembalikan ke Draft`.
+  - Setelah aksi ubah berita selesai, user diarahkan kembali ke daftar Berita.
+- Tabel Berita dirapikan:
+  - Link `Edit`, `Lihat di Portal`, dan `Story IG` dipindahkan ke bawah judul agar tidak perlu scroll ke kanan.
+  - `Lihat di Portal` dan `Story IG` hanya muncul untuk berita `published`.
+- Fitur Story IG admin ditambahkan:
+  - Template story ada di `public/images/story/ig-story-template-empty.png`.
+  - Contoh layout ada di `public/images/story/ig-story-template-example.png`.
+  - Generator Story IG tersedia dari tombol `Story IG` di daftar dan edit Berita.
+  - Generator membuat PNG 1080x1920 dari template, gambar utama berita, dan judul berita.
+  - Generator menyediakan tombol `Download Story`, `Salin Link Berita`, `Bagikan dari Perangkat Ini`, `Buka Instagram`, dan `Lihat Berita`.
+- Migration `2026_05_12_140000_add_username_and_nullable_email_to_users_table.php` dibuat lebih aman untuk fresh install/test agar tidak membuat unique index `username` dua kali.
+- Jika hosting tidak punya akses terminal untuk `php artisan optimize:clear`, hapus file cache `.php` di `bootstrap/cache/`, terutama `routes-v7.php` jika ada.
 
 ## Login Admin Awal
 

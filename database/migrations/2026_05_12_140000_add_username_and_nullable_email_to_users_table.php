@@ -13,6 +13,8 @@ return new class extends Migration
      */
     public function up(): void
     {
+        $hasUsernameColumn = Schema::hasColumn('users', 'username');
+
         Schema::table('users', function (Blueprint $table): void {
             if (! Schema::hasColumn('users', 'username')) {
                 $table->string('username')->nullable()->after('name');
@@ -43,9 +45,11 @@ return new class extends Migration
                     ->update(['username' => $username]);
             });
 
-        Schema::table('users', function (Blueprint $table): void {
-            $table->unique('username');
-        });
+        if (! $hasUsernameColumn) {
+            Schema::table('users', function (Blueprint $table): void {
+                $table->unique('username');
+            });
+        }
     }
 
     /**

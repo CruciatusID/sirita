@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\AdminStoryController;
 use App\Http\Controllers\PortalController;
 use Illuminate\Support\Facades\Route;
+
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function (): void {
+    Route::get('/berita/{post}/story-instagram', [AdminStoryController::class, 'post'])->name('posts.story');
+});
 
 Route::get('/', [PortalController::class, 'home'])->name('home');
 Route::get('/cari', [PortalController::class, 'search'])->name('search');
