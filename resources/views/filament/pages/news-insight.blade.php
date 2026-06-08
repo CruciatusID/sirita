@@ -1,0 +1,112 @@
+<x-filament-panels::page>
+    {{-- Dropdown Filter Bulan & Tahun Menggunakan Komponen Native Filament --}}
+    <div class="flex flex-col sm:flex-row gap-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 p-5 rounded-xl shadow-sm mb-4">
+        <div class="w-full sm:w-64">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">Pilih Bulan</span>
+            <x-filament::input.wrapper>
+                <x-filament::input.select wire:model.live="month" id="filter-month">
+                    <option value="01">Januari</option>
+                    <option value="02">Februari</option>
+                    <option value="03">Maret</option>
+                    <option value="04">April</option>
+                    <option value="05">Mei</option>
+                    <option value="06">Juni</option>
+                    <option value="07">Juli</option>
+                    <option value="08">Agustus</option>
+                    <option value="09">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </x-filament::input.select>
+            </x-filament::input.wrapper>
+        </div>
+
+        <div class="w-full sm:w-64">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">Pilih Tahun</span>
+            <x-filament::input.wrapper>
+                <x-filament::input.select wire:model.live="year" id="filter-year">
+                    @for ($y = now()->year; $y >= now()->year - 3; $y--)
+                        <option value="{{ sprintf('%04d', $y) }}">{{ $y }}</option>
+                    @endfor
+                </x-filament::input.select>
+            </x-filament::input.wrapper>
+        </div>
+    </div>
+
+    {{-- Tabel Berita Terpopuler & Kontributor Teraktif Menggunakan Section Native Filament --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+        <!-- Tabel Berita Terpopuler -->
+        <x-filament::section icon="heroicon-o-fire" icon-color="warning" heading="5 Berita Terpopuler">
+            <div style="overflow-x: auto; width: 100%;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                    <thead>
+                        <tr style="color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
+                            <th style="padding: 12px 16px 12px 0; text-align: left; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Judul</th>
+                            <th style="padding: 12px 16px; text-align: left; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Kategori</th>
+                            <th style="padding: 12px 0 12px 16px; text-align: right; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Jumlah Dibaca</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($popularPosts as $post)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                <td style="padding: 16px 16px 16px 0; text-align: left; max-width: 250px; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                    <div style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: inherit;" title="{{ $post->title }}">
+                                        {{ $post->title }}
+                                    </div>
+                                    <div style="font-size: 12px; color: #9ca3af; margin-top: 4px;">
+                                        Oleh: <span style="font-weight: 500; color: inherit;">{{ $post->author->name ?? '-' }}</span>
+                                    </div>
+                                </td>
+                                <td style="padding: 16px; text-align: left; color: #9ca3af; white-space: nowrap; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                    {{ $post->category->name ?? '-' }}
+                                </td>
+                                <td style="padding: 16px 0 16px 16px; text-align: right; font-weight: 600; color: #f59e0b; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                    {{ number_format($post->monthly_views) }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" style="padding: 24px 0; text-align: center; color: #9ca3af; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">Belum ada log dibaca pada periode ini.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </x-filament::section>
+
+        <!-- Tabel Kontributor Paling Aktif -->
+        <x-filament::section icon="heroicon-o-users" icon-color="success" heading="5 Kontributor Teraktif">
+            <div style="overflow-x: auto; width: 100%;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                    <thead>
+                        <tr style="color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
+                            <th style="padding: 12px 16px 12px 0; text-align: left; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Nama Kontributor</th>
+                            <th style="padding: 12px 16px; text-align: right; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Berita Terbit</th>
+                            <th style="padding: 12px 0 12px 16px; text-align: right; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Total Dibaca</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($topContributors as $user)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                <td style="padding: 16px 16px 16px 0; text-align: left; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                    <div style="font-weight: 500; color: inherit;">{{ $user->name }}</div>
+                                    <div style="font-size: 12px; color: #9ca3af; margin-top: 4px;">{{ $user->email }}</div>
+                                </td>
+                                <td style="padding: 16px; text-align: right; color: #9ca3af; white-space: nowrap; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                    {{ number_format($user->published_posts_count) }} berita
+                                </td>
+                                <td style="padding: 16px 0 16px 16px; text-align: right; font-weight: 600; color: #10b981; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                    {{ number_format($user->total_views) }} pembaca
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" style="padding: 24px 0; text-align: center; color: #9ca3af; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">Belum ada aktivitas kontributor pada periode ini.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </x-filament::section>
+    </div>
+</x-filament-panels::page>

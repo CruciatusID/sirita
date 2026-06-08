@@ -80,6 +80,11 @@ class Post extends Model
         return $this->belongsToMany(Tag::class);
     }
 
+    public function viewsRelation(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PostView::class);
+    }
+
     public function getFeaturedImageCaptionAttribute($value): ?string
     {
         if (filled($value)) {

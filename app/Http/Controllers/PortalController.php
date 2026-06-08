@@ -63,6 +63,12 @@ class PortalController extends Controller
 
         $post->increment('views');
 
+        $post->viewsRelation()->create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'created_at' => now(),
+        ]);
+
         return view('portal.post', [
             'post' => $post->load(['category.parent', 'author', 'editor', 'unit', 'tags']),
             'relatedPosts' => Post::published()

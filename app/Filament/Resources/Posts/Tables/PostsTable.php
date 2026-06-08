@@ -114,6 +114,7 @@ class PostsTable
                             );
                     }),
             ], layout: FiltersLayout::AboveContentCollapsible)
+            ->defaultSort('created_at', 'desc')
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

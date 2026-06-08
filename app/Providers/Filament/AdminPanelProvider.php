@@ -35,6 +35,7 @@ class AdminPanelProvider extends PanelProvider
             ->registrationRouteSlug('daftar-kontributor')
             ->profile(EditProfile::class, isSimple: false)
             ->brandLogo(asset('images/logo-kemenag.png'))
+            ->homeUrl('/')
             ->brandLogoHeight('3rem')
             ->favicon(asset('images/logo-kemenag.png'))
             ->colors([
@@ -44,10 +45,17 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 Dashboard::class,
+                \App\Filament\Pages\NewsInsight::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
+            ])
+            ->navigationItems([
+                \Filament\Navigation\NavigationItem::make('Kunjungi Website')
+                    ->url('/', shouldOpenInNewTab: true)
+                    ->icon('heroicon-o-globe-alt')
+                    ->sort(-100),
             ])
             ->renderHook(
                 PanelsRenderHook::SIDEBAR_FOOTER,
