@@ -233,3 +233,16 @@ public_html/sirita/public
 - Custom login page ada di `app/Filament/Pages/Auth/Login.php`.
 - Provider panel admin memakai `ValidateCsrfToken` untuk kompatibilitas Laravel 12.
 - Package `spatie/laravel-backup` masih ada. Jika hosting tidak menyediakan extension `zip`, sebaiknya nanti package backup dihapus dari project agar tidak perlu edit vendor.
+
+## Update 2026-06-15: Keamanan & SEO (Fase 1 & Fase 2)
+
+### 1. Fase 1: Keamanan & Proteksi
+- **Proteksi Eksekusi Skrip:** Berkas `.htaccess` ditambahkan di `public/storage/` untuk menonaktifkan eksekusi skrip (.php, .cgi, dsb) demi mencegah serangan Remote Code Execution (RCE).
+- **Rate Limiting:** Middleware `throttle:5,1` ditambahkan pada rute Suka dan Bagikan berita di `routes/web.php` untuk membatasi request spammer/bot ke database.
+- **Automated Tests:** Berkas `tests/Feature/PortalPagesTest.php` dibuat untuk memverifikasi fungsionalitas dasar portal dan aturan pembatasan akses (semua 9 pengujian sukses).
+
+### 2. Fase 2: SEO & Performa Dasar
+- **JSON-LD NewsArticle:** Skema data terstruktur ditambahkan di `portal/post.blade.php` agar artikel terindeks optimal di Google News. Simbol `@` di-escape sebagai `@@` agar tidak bertabrakan dengan compiler Blade.
+- **MySQL Full-Text Search:** Migrasi `2026_06_15_132100_add_fulltext_index_to_posts_table.php` dibuat untuk menambahkan indeks `FULLTEXT` pada tabel `posts` (kolom `title`, `excerpt`, `content`). Pencarian di `PortalController@search` dioptimalkan dengan `MATCH() AGAINST()`.
+- **RSS Feed:** Rute `/feed` ditambahkan ke `routes/web.php` dan di-render menggunakan XML view di `portal/feed.blade.php` tanpa dependensi eksternal.
+

@@ -29,6 +29,7 @@
         <meta name="twitter:image" content="{{ $metaImage }}">
     @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('head')
 </head>
 <body class="min-h-screen bg-stone-50 text-stone-900 antialiased">
     <header class="sticky top-0 z-50 border-b border-stone-200 bg-white/90 backdrop-blur-md">

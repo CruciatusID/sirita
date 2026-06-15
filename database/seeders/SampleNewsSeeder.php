@@ -74,6 +74,7 @@ class SampleNewsSeeder extends Seeder
                 ['email' => $editor['email']],
                 [
                     'name' => $editor['name'],
+                    'username' => strstr($editor['email'], '@', true),
                     'password' => Hash::make('password'),
                     'unit_id' => $unit->id,
                     'status' => 'active',
@@ -92,6 +93,7 @@ class SampleNewsSeeder extends Seeder
                 ['email' => $contributor['email']],
                 [
                     'name' => $contributor['name'],
+                    'username' => strstr($contributor['email'], '@', true),
                     'password' => Hash::make('password'),
                     'unit_id' => $unit->id,
                     'status' => 'active',

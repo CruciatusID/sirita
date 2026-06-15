@@ -1,4 +1,30 @@
 <x-layouts.portal :title="$post->seo_title ?: $post->title" :description="$post->seo_description ?: $post->excerpt" :image="$post->og_image ?: $post->featured_image">
+    @push('head')
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@type": "NewsArticle",
+        "headline": "{{ e($post->title) }}",
+        "image": [
+            "{{ $post->featured_image ? asset('storage/' . $post->featured_image) : asset('images/logo-kemenag.png') }}"
+        ],
+        "datePublished": "{{ $post->published_at?->toIso8601String() ?? $post->created_at->toIso8601String() }}",
+        "dateModified": "{{ $post->updated_at->toIso8601String() }}",
+        "author": {
+            "@@type": "Person",
+            "name": "{{ e($post->author->name) }}"
+        },
+        "publisher": {
+            "@@type": "Organization",
+            "name": "Kemenag Tana Toraja",
+            "logo": {
+                "@@type": "ImageObject",
+                "url": "{{ asset('images/logo-kemenag.png') }}"
+            }
+        }
+    }
+    </script>
+    @endpush
     <article class="mx-auto max-w-4xl px-5 py-12">
         <header class="mb-10 text-center">
             <a href="{{ route('categories.show', $post->category) }}" class="text-xs font-bold uppercase tracking-[0.2em] text-emerald-800">{{ $post->category->full_name }}</a>

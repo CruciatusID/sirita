@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class PortalController extends Controller
 {
@@ -151,13 +152,21 @@ class PortalController extends Controller
         $posts = Post::published()
             ->with(['category.parent', 'author'])
             ->when($query !== '', function ($builder) use ($query): void {
-                $builder->where(function ($builder) use ($query): void {
-                    $builder
-                        ->where('title', 'like', "%{$query}%")
-                        ->orWhere('excerpt', 'like', "%{$query}%")
-                        ->orWhere('content', 'like', "%{$query}%")
-                        ->orWhereHas('category', fn ($category) => $category->where('name', 'like', "%{$query}%"));
-                });
+                $driver = DB::connection()->getDriverName();
+                if ($driver !== 'sqlite') {
+                    $builder->where(function ($builder) use ($query): void {
+                        $builder->whereFullText(['title', 'excerpt', 'content'], $query)
+                            ->orWhereHas('category', fn ($category) => $category->where('name', 'like', "%{$query}%"));
+                    });
+                } else {
+                    $builder->where(function ($builder) use ($query): void {
+                        $builder
+                            ->where('title', 'like', "%{$query}%")
+                            ->orWhere('excerpt', 'like', "%{$query}%")
+                            ->orWhere('content', 'like', "%{$query}%")
+                            ->orWhereHas('category', fn ($category) => $category->where('name', 'like', "%{$query}%"));
+                    });
+                }
             })
             ->latest('published_at')
             ->paginate(12)
@@ -196,6 +205,15 @@ class PortalController extends Controller
 
         return response()
             ->view('portal.sitemap', compact('posts', 'pages', 'categories'))
+            ->header('Content-Type', 'application/xml');
+    }
+
+    public function feed(): Response
+    {
+        $posts = Post::published()->latest('published_at')->limit(20)->get();
+
+        return response()
+            ->view('portal.feed', compact('posts'))
             ->header('Content-Type', 'application/xml');
     }
 }
