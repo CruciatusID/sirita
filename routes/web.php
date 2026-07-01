@@ -8,6 +8,12 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function (): v
     Route::get('/berita/{post}/story-instagram', [AdminStoryController::class, 'post'])->name('posts.story');
 });
 
+Route::get('/clear-cache-hosting', function () {
+    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+    \Illuminate\Support\Facades\Artisan::call('filament:clear-cached-components');
+    return 'Cache cleared successfully!';
+});
+
 Route::get('/', [PortalController::class, 'home'])->name('home');
 Route::get('/cari', [PortalController::class, 'search'])->name('search');
 Route::get('/berita/{post:slug}', [PortalController::class, 'post'])->name('posts.show');
