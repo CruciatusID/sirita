@@ -11,6 +11,7 @@ use App\Models\Unit;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -90,21 +91,32 @@ class PostForm
                     )
                     ->searchable()
                     ->preload(),
-                Select::make('tags')
+                TagsInput::make('quick_tags')
                     ->label('Tag')
-                    ->relationship('tags', 'name')
-                    ->multiple()
-                    ->searchable()
-                    ->preload()
-                    ->createOptionForm([
-                        SlugFields::source(
-                            TextInput::make('name')
-                                ->label('Nama Tag')
-                                ->required()
-                                ->maxLength(255),
-                        ),
-                        SlugFields::slug(),
-                    ]),
+                    ->separator(',')
+                    ->splitKeys(['Enter', 'Tab', ','])
+                    ->suggestions(function () {
+                        return \App\Models\Tag::pluck('name')->toArray();
+                    })
+                    ->loadStateFromRelationshipsUsing(function ($state, $record, $component) {
+                        if ($record) {
+                            $component->state($record->tags->pluck('name')->toArray());
+                        }
+                    })
+                    ->saveRelationshipsUsing(function ($record, $state) {
+                        $tagIds = [];
+                        if (is_array($state)) {
+                            foreach ($state as $tagName) {
+                                $tagName = trim($tagName);
+                                if (!empty($tagName)) {
+                                    $tag = \App\Models\Tag::firstOrCreate(['name' => $tagName]);
+                                    $tagIds[] = $tag->id;
+                                }
+                            }
+                        }
+                        $record->tags()->sync($tagIds);
+                    })
+                    ->dehydrated(false),
                 DateTimePicker::make('published_at')
                     ->label('Tanggal Terbit')
                     ->default(now()),
