@@ -1,6 +1,15 @@
 <x-filament-panels::page>
+    {{-- Header Laporan Cetak (Hanya Muncul saat Print) --}}
+    <div class="print-header hidden" style="border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 20px; text-align: center;">
+        <h1 style="font-size: 24px; font-weight: bold; text-transform: uppercase; margin: 0; color: #1e293b;">Laporan Insight & Analitik</h1>
+        <p style="font-size: 16px; margin: 4px 0 0 0; color: #475569; font-weight: 500;">SIRITA — Portal Berita Kemenag Tana Toraja</p>
+        <p style="font-size: 14px; margin: 8px 0 0 0; font-style: italic; color: #64748b;">
+            Periode: {{ \Carbon\Carbon::createFromDate((int) $year, (int) $month, 1)->translatedFormat('F Y') }}
+        </p>
+    </div>
+
     {{-- Dropdown Filter Bulan & Tahun Menggunakan Komponen Native Filament --}}
-    <div class="flex flex-col sm:flex-row gap-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 p-5 rounded-xl shadow-sm mb-4">
+    <div class="flex flex-col sm:flex-row gap-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 p-5 rounded-xl shadow-sm mb-4 filter-container">
         <div class="w-full sm:w-64">
             <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">Pilih Bulan</span>
             <x-filament::input.wrapper>
@@ -171,4 +180,77 @@
             </div>
         </x-filament::section>
     </div>
+
+    {{-- CSS Khusus untuk Mengatur Tampilan Cetak / Save to PDF --}}
+    <style>
+        @media screen {
+            .print-header {
+                display: none !important;
+            }
+        }
+        @media print {
+            /* Tampilkan header laporan resmi */
+            .print-header {
+                display: block !important;
+            }
+            
+            /* Sembunyikan elemen navigasi Filament, breadcrumbs, tombol cetak, dan form filter */
+            .fi-sidebar,
+            .fi-topbar,
+            .fi-breadcrumbs,
+            .fi-header-actions,
+            .filter-container {
+                display: none !important;
+            }
+            
+            /* Bersihkan background warna admin panel */
+            body, 
+            .fi-body, 
+            .fi-layout {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+            }
+            
+            /* Hilangkan padding default pada kertas */
+            .fi-main {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            
+            .fi-main-ctn {
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+            
+            /* Ubah tata letak dua kolom (grid) menjadi vertikal rapi */
+            .grid {
+                display: block !important;
+            }
+            
+            .grid > * {
+                margin-bottom: 24px !important;
+                page-break-inside: avoid !important;
+                border: 1px solid #e2e8f0 !important;
+                box-shadow: none !important;
+                background-color: #ffffff !important;
+            }
+            
+            /* Maksimalkan keterbacaan tabel di atas kertas */
+            table {
+                font-size: 12px !important;
+                width: 100% !important;
+            }
+            
+            th, td {
+                padding: 8px 12px !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+            }
+            
+            /* Paksa grafik Chart.js memiliki ukuran penuh */
+            canvas {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+        }
+    </style>
 </x-filament-panels::page>

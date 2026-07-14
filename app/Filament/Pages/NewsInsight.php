@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Filament\Support\AdminAccess;
 use App\Models\Post;
 use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Pages\Page;
 use Livewire\Attributes\Url;
 
@@ -19,6 +20,19 @@ class NewsInsight extends Page
     protected static ?string $navigationLabel = 'Insight & Analitik';
 
     protected static ?int $navigationSort = 10;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('print')
+                ->label('Cetak Laporan (PDF)')
+                ->icon('heroicon-o-printer')
+                ->color('warning')
+                ->extraAttributes([
+                    'onclick' => 'window.print(); return false;',
+                ]),
+        ];
+    }
 
     #[Url]
     public ?string $month = null;
