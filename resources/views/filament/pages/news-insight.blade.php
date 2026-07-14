@@ -9,9 +9,9 @@
     </div>
 
     {{-- Dropdown Filter Bulan & Tahun Menggunakan Komponen Native Filament --}}
-    <div class="flex flex-col sm:flex-row gap-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 p-5 rounded-xl shadow-sm mb-4 filter-container">
-        <div class="w-full sm:w-64">
-            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">Pilih Bulan</span>
+    <div class="filter-container" style="display: flex; flex-direction: row; gap: 16px; align-items: center; margin-bottom: 24px;">
+        <div style="flex: 1; max-width: 240px; min-width: 120px;">
+            <span style="display: block; font-size: 12px; font-weight: 600; color: #9ca3af; margin-bottom: 6px;">Pilih Bulan</span>
             <x-filament::input.wrapper>
                 <x-filament::input.select wire:model.live="month" id="filter-month">
                     <option value="01">Januari</option>
@@ -30,8 +30,8 @@
             </x-filament::input.wrapper>
         </div>
 
-        <div class="w-full sm:w-64">
-            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">Pilih Tahun</span>
+        <div style="flex: 1; max-width: 240px; min-width: 120px;">
+            <span style="display: block; font-size: 12px; font-weight: 600; color: #9ca3af; margin-bottom: 6px;">Pilih Tahun</span>
             <x-filament::input.wrapper>
                 <x-filament::input.select wire:model.live="year" id="filter-year">
                     @for ($y = now()->year; $y >= now()->year - 3; $y--)
@@ -42,143 +42,165 @@
         </div>
     </div>
 
-    {{-- Tabel Berita Terpopuler & Kontributor Teraktif Menggunakan Section Native Filament --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-        <!-- Tabel Berita Terpopuler -->
-        <x-filament::section icon="heroicon-o-fire" icon-color="warning" heading="5 Berita Terpopuler">
-            <div style="overflow-x: auto; width: 100%;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
-                    <thead>
-                        <tr style="color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
-                            <th style="padding: 12px 16px 12px 0; text-align: left; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Judul</th>
-                            <th style="padding: 12px 16px; text-align: left; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Kategori</th>
-                            <th style="padding: 12px 0 12px 16px; text-align: right; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Jumlah Dibaca</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($popularPosts as $post)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                                <td style="padding: 16px 16px 16px 0; text-align: left; max-width: 250px; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
-                                    <div style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: inherit;" title="{{ $post->title }}">
-                                        {{ $post->title }}
-                                    </div>
-                                    <div style="font-size: 12px; color: #9ca3af; margin-top: 4px;">
-                                        Oleh: <span style="font-weight: 500; color: inherit;">{{ $post->author->name ?? '-' }}</span>
-                                    </div>
-                                </td>
-                                <td style="padding: 16px; text-align: left; color: #9ca3af; white-space: nowrap; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
-                                    {{ $post->category->name ?? '-' }}
-                                </td>
-                                <td style="padding: 16px 0 16px 16px; text-align: right; font-weight: 600; color: #f59e0b; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
-                                    {{ number_format($post->monthly_views) }}
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="3" style="padding: 24px 0; text-align: center; color: #9ca3af; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">Belum ada log dibaca pada periode ini.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </x-filament::section>
-
-        <!-- Tabel Kontributor Paling Aktif -->
-        <x-filament::section icon="heroicon-o-users" icon-color="success" heading="5 Kontributor Teraktif">
-            <div style="overflow-x: auto; width: 100%;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
-                    <thead>
-                        <tr style="color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
-                            <th style="padding: 12px 16px 12px 0; text-align: left; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Nama Kontributor</th>
-                            <th style="padding: 12px 16px; text-align: right; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Berita Terbit</th>
-                            <th style="padding: 12px 0 12px 16px; text-align: right; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Total Dibaca</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($topContributors as $user)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                                <td style="padding: 16px 16px 16px 0; text-align: left; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
-                                    <div style="font-weight: 500; color: inherit;">{{ $user->name }}</div>
-                                    <div style="font-size: 12px; color: #9ca3af; margin-top: 4px;">{{ $user->email }}</div>
-                                </td>
-                                <td style="padding: 16px; text-align: right; color: #9ca3af; white-space: nowrap; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
-                                    {{ number_format($user->published_posts_count) }} berita
-                                </td>
-                                <td style="padding: 16px 0 16px 16px; text-align: right; font-weight: 600; color: #10b981; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
-                                    {{ number_format($user->total_views) }} pembaca
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="3" style="padding: 24px 0; text-align: center; color: #9ca3af; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">Belum ada aktivitas kontributor pada periode ini.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </x-filament::section>
+    {{-- Widgets Analitik --}}
+    <div class="mb-6">
+        @livewire(\App\Filament\Widgets\InsightStatsOverview::class, ['month' => $month, 'year' => $year], key('stats-' . $month . '-' . $year))
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        <!-- Tabel Sumber Lalu Lintas -->
-        <x-filament::section icon="heroicon-o-globe-alt" icon-color="info" heading="Sumber Lalu Lintas (Referrers)">
-            <div style="overflow-x: auto; width: 100%;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
-                    <thead>
-                        <tr style="color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
-                            <th style="padding: 12px 16px 12px 0; text-align: left; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Sumber</th>
-                            <th style="padding: 12px 0 12px 16px; text-align: right; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Views</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($referrers as $ref)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                                <td style="padding: 16px 16px 16px 0; text-align: left; border-bottom: 1px solid rgba(156, 163, 175, 0.15); font-weight: 500;">
-                                    {{ $ref->referrer }}
-                                </td>
-                                <td style="padding: 16px 0 16px 16px; text-align: right; font-weight: 600; color: #3b82f6; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
-                                    {{ number_format($ref->views_count) }}
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="2" style="padding: 24px 0; text-align: center; color: #9ca3af; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">Belum ada data rujukan lalu lintas pada periode ini.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </x-filament::section>
+    <div style="display: flex; flex-direction: row; gap: 24px; margin-bottom: 24px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 300px;">
+            @livewire(\App\Filament\Widgets\MonthlyPostsChart::class, ['month' => $month, 'year' => $year], key('posts-chart-' . $month . '-' . $year))
+        </div>
+        <div style="flex: 1; min-width: 300px;">
+            @livewire(\App\Filament\Widgets\CategoryViewsChart::class, ['month' => $month, 'year' => $year], key('category-chart-' . $month . '-' . $year))
+        </div>
+    </div>
 
-        <!-- Tabel Browser Pengunjung -->
-        <x-filament::section icon="heroicon-o-computer-desktop" icon-color="primary" heading="Browser Pengunjung">
-            <div style="overflow-x: auto; width: 100%;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
-                    <thead>
-                        <tr style="color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
-                            <th style="padding: 12px 16px 12px 0; text-align: left; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Nama Browser</th>
-                            <th style="padding: 12px 0 12px 16px; text-align: right; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Penggunaan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($browsers as $browser)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                                <td style="padding: 16px 16px 16px 0; text-align: left; border-bottom: 1px solid rgba(156, 163, 175, 0.15); font-weight: 500;">
-                                    {{ $browser->name }}
-                                </td>
-                                <td style="padding: 16px 0 16px 16px; text-align: right; font-weight: 600; color: #6366f1; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
-                                    {{ number_format($browser->count) }}
-                                </td>
+    {{-- Tabel Berita Terpopuler & Kontributor Teraktif Menggunakan Section Native Filament --}}
+    <div style="display: flex; flex-direction: row; gap: 24px; margin-top: 16px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 300px;">
+            <!-- Tabel Berita Terpopuler -->
+            <x-filament::section icon="heroicon-o-fire" icon-color="warning" heading="5 Berita Terpopuler">
+                <div style="overflow-x: auto; width: 100%;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                        <thead>
+                            <tr style="color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
+                                <th style="padding: 12px 16px 12px 0; text-align: left; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Judul</th>
+                                <th style="padding: 12px 16px; text-align: left; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Kategori</th>
+                                <th style="padding: 12px 0 12px 16px; text-align: right; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Jumlah Dibaca</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="2" style="padding: 24px 0; text-align: center; color: #9ca3af; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">Belum ada data browser pada periode ini.</td>
+                        </thead>
+                        <tbody>
+                            @forelse ($popularPosts as $post)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                    <td style="padding: 16px 16px 16px 0; text-align: left; max-width: 250px; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                        <div style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: inherit;" title="{{ $post->title }}">
+                                            {{ $post->title }}
+                                        </div>
+                                        <div style="font-size: 12px; color: #9ca3af; margin-top: 4px;">
+                                            Oleh: <span style="font-weight: 500; color: inherit;">{{ $post->author->name ?? '-' }}</span>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 16px; text-align: left; color: #9ca3af; white-space: nowrap; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                        {{ $post->category->name ?? '-' }}
+                                    </td>
+                                    <td style="padding: 16px 0 16px 16px; text-align: right; font-weight: 600; color: #f59e0b; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                        {{ number_format($post->monthly_views) }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" style="padding: 24px 0; text-align: center; color: #9ca3af; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">Belum ada log dibaca pada periode ini.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </x-filament::section>
+        </div>
+
+        <div style="flex: 1; min-width: 300px;">
+            <!-- Tabel Kontributor Paling Aktif -->
+            <x-filament::section icon="heroicon-o-users" icon-color="success" heading="5 Kontributor Teraktif">
+                <div style="overflow-x: auto; width: 100%;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                        <thead>
+                            <tr style="color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
+                                <th style="padding: 12px 16px 12px 0; text-align: left; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Nama Kontributor</th>
+                                <th style="padding: 12px 16px; text-align: right; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Berita Terbit</th>
+                                <th style="padding: 12px 0 12px 16px; text-align: right; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Total Dibaca</th>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </x-filament::section>
+                        </thead>
+                        <tbody>
+                            @forelse ($topContributors as $user)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                    <td style="padding: 16px 16px 16px 0; text-align: left; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                        <div style="font-weight: 500; color: inherit;">{{ $user->name }}</div>
+                                        <div style="font-size: 12px; color: #9ca3af; margin-top: 4px;">{{ $user->email }}</div>
+                                    </td>
+                                    <td style="padding: 16px; text-align: right; color: #9ca3af; white-space: nowrap; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                        {{ number_format($user->published_posts_count) }} berita
+                                    </td>
+                                    <td style="padding: 16px 0 16px 16px; text-align: right; font-weight: 600; color: #10b981; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                        {{ number_format($user->total_views) }} pembaca
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" style="padding: 24px 0; text-align: center; color: #9ca3af; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">Belum ada aktivitas kontributor pada periode ini.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </x-filament::section>
+        </div>
+    </div>
+
+    <div style="display: flex; flex-direction: row; gap: 24px; margin-top: 24px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 300px;">
+            <!-- Tabel Sumber Lalu Lintas -->
+            <x-filament::section icon="heroicon-o-globe-alt" icon-color="info" heading="Sumber Lalu Lintas (Referrers)">
+                <div style="overflow-x: auto; width: 100%;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                        <thead>
+                            <tr style="color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
+                                <th style="padding: 12px 16px 12px 0; text-align: left; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Sumber</th>
+                                <th style="padding: 12px 0 12px 16px; text-align: right; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Views</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($referrers as $ref)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                    <td style="padding: 16px 16px 16px 0; text-align: left; border-bottom: 1px solid rgba(156, 163, 175, 0.15); font-weight: 500;">
+                                        {{ $ref->referrer }}
+                                    </td>
+                                    <td style="padding: 16px 0 16px 16px; text-align: right; font-weight: 600; color: #3b82f6; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                        {{ number_format($ref->views_count) }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" style="padding: 24px 0; text-align: center; color: #9ca3af; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">Belum ada data rujukan lalu lintas pada periode ini.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </x-filament::section>
+        </div>
+
+        <div style="flex: 1; min-width: 300px;">
+            <!-- Tabel Browser Pengunjung -->
+            <x-filament::section icon="heroicon-o-computer-desktop" icon-color="primary" heading="Browser Pengunjung">
+                <div style="overflow-x: auto; width: 100%;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                        <thead>
+                            <tr style="color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
+                                <th style="padding: 12px 16px 12px 0; text-align: left; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Nama Browser</th>
+                                <th style="padding: 12px 0 12px 16px; text-align: right; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Penggunaan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($browsers as $browser)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                    <td style="padding: 16px 16px 16px 0; text-align: left; border-bottom: 1px solid rgba(156, 163, 175, 0.15); font-weight: 500;">
+                                        {{ $browser->name }}
+                                    </td>
+                                    <td style="padding: 16px 0 16px 16px; text-align: right; font-weight: 600; color: #6366f1; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                        {{ number_format($browser->count) }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" style="padding: 24px 0; text-align: center; color: #9ca3af; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">Belum ada data browser pada periode ini.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </x-filament::section>
+        </div>
     </div>
 
     {{-- CSS Khusus untuk Mengatur Tampilan Cetak / Save to PDF --}}

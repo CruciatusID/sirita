@@ -20,6 +20,7 @@ class SampleNewsSeeder extends Seeder
      */
     public function run(): void
     {
+        \App\Models\PostView::query()->delete();
         $editors = [
             [
                 'name' => 'Mira Damayanti',
@@ -158,7 +159,7 @@ class SampleNewsSeeder extends Seeder
                 'tags' => ['rapat-koordinasi', 'pembinaan-asn', 'pelayanan-publik', 'zona-integritas'],
                 'featured_image' => 'media/dummy-news-01.jpg',
                 'og_image' => 'media/dummy-news-01.jpg',
-                'published_at' => now()->subDays(8),
+                'published_at' => \Carbon\Carbon::create(2026, 5, 5, 10, 0, 0),
                 'views' => 184,
                 'likes_count' => 27,
                 'shares_count' => 9,
@@ -177,7 +178,7 @@ class SampleNewsSeeder extends Seeder
                 'tags' => ['pembinaan-asn', 'pembinaan', 'bimas-islam', 'layanan-publik'],
                 'featured_image' => 'media/dummy-news-02.jpg',
                 'og_image' => 'media/dummy-news-02.jpg',
-                'published_at' => now()->subDays(6),
+                'published_at' => \Carbon\Carbon::create(2026, 5, 15, 14, 30, 0),
                 'views' => 156,
                 'likes_count' => 18,
                 'shares_count' => 7,
@@ -196,7 +197,7 @@ class SampleNewsSeeder extends Seeder
                 'tags' => ['kerukunan-umat', 'moderasi-beragama', 'sosialisasi'],
                 'featured_image' => 'media/dummy-news-03.jpg',
                 'og_image' => 'media/dummy-news-03.jpg',
-                'published_at' => now()->subDays(5),
+                'published_at' => \Carbon\Carbon::create(2026, 5, 25, 9, 15, 0),
                 'views' => 131,
                 'likes_count' => 22,
                 'shares_count' => 5,
@@ -215,7 +216,7 @@ class SampleNewsSeeder extends Seeder
                 'tags' => ['madrasah', 'digitalisasi', 'pendidikan-islam', 'kegiatan'],
                 'featured_image' => 'media/dummy-news-04.jpg',
                 'og_image' => 'media/dummy-news-04.jpg',
-                'published_at' => now()->subDays(4),
+                'published_at' => \Carbon\Carbon::create(2026, 6, 5, 11, 0, 0),
                 'views' => 143,
                 'likes_count' => 16,
                 'shares_count' => 6,
@@ -234,7 +235,7 @@ class SampleNewsSeeder extends Seeder
                 'tags' => ['kua', 'layanan-publik', 'kegiatan', 'pelayanan-publik'],
                 'featured_image' => 'media/dummy-news-05.jpg',
                 'og_image' => 'media/dummy-news-05.jpg',
-                'published_at' => now()->subDays(3),
+                'published_at' => \Carbon\Carbon::create(2026, 6, 15, 16, 45, 0),
                 'views' => 204,
                 'likes_count' => 31,
                 'shares_count' => 11,
@@ -253,7 +254,7 @@ class SampleNewsSeeder extends Seeder
                 'tags' => ['madrasah', 'pembinaan', 'kegiatan'],
                 'featured_image' => 'media/dummy-news-06.jpg',
                 'og_image' => 'media/dummy-news-06.jpg',
-                'published_at' => now()->subDays(2),
+                'published_at' => \Carbon\Carbon::create(2026, 6, 25, 8, 30, 0),
                 'views' => 117,
                 'likes_count' => 14,
                 'shares_count' => 4,
@@ -272,7 +273,7 @@ class SampleNewsSeeder extends Seeder
                 'tags' => ['game-online', 'remaja', 'etika-digital', 'keseimbangan-ibadah'],
                 'featured_image' => 'media/dummy-news-07.jpg',
                 'og_image' => 'media/dummy-news-07.jpg',
-                'published_at' => now()->subDay(),
+                'published_at' => \Carbon\Carbon::create(2026, 7, 2, 13, 0, 0),
                 'views' => 98,
                 'likes_count' => 12,
                 'shares_count' => 3,
@@ -291,7 +292,7 @@ class SampleNewsSeeder extends Seeder
                 'tags' => ['game-online', 'keluarga', 'etika-digital', 'moderasi-beragama'],
                 'featured_image' => 'media/dummy-news-08.jpg',
                 'og_image' => 'media/dummy-news-08.jpg',
-                'published_at' => now()->subHours(18),
+                'published_at' => \Carbon\Carbon::create(2026, 7, 8, 15, 0, 0),
                 'views' => 86,
                 'likes_count' => 10,
                 'shares_count' => 2,
@@ -310,7 +311,7 @@ class SampleNewsSeeder extends Seeder
                 'tags' => ['game-online', 'etika-digital', 'layanan-publik', 'remaja'],
                 'featured_image' => 'media/dummy-news-09.jpg',
                 'og_image' => 'media/dummy-news-09.jpg',
-                'published_at' => now()->subHours(10),
+                'published_at' => \Carbon\Carbon::create(2026, 7, 12, 10, 0, 0),
                 'views' => 77,
                 'likes_count' => 8,
                 'shares_count' => 1,
@@ -350,6 +351,51 @@ class SampleNewsSeeder extends Seeder
             );
 
             $post->tags()->sync($tagIds);
+
+            // Seed post_views table
+            $viewsCount = (int) $postData['views'];
+            $viewsToInsert = [];
+            
+            $userAgents = [
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', // Chrome
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15', // Safari
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0', // Firefox
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0', // Edge
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 OPR/106.0.0.0', // Opera
+                'Unknown User Agent', // Lainnya
+            ];
+            
+            $referrers = [
+                'google.com',
+                'facebook.com',
+                't.co', // Twitter
+                'instagram.com',
+                'bing.com',
+                null, // Direct
+            ];
+
+            $publishedAt = $postData['published_at'];
+            $now = now();
+            
+            for ($i = 0; $i < $viewsCount; $i++) {
+                $randomTimestamp = \Carbon\Carbon::createFromTimestamp(
+                    rand($publishedAt->timestamp, $now->timestamp)
+                );
+                
+                $viewsToInsert[] = [
+                    'post_id' => $post->id,
+                    'ip_address' => '192.168.1.' . rand(1, 254),
+                    'user_agent' => $userAgents[array_rand($userAgents)],
+                    'referrer' => $referrers[array_rand($referrers)],
+                    'created_at' => $randomTimestamp,
+                ];
+            }
+            
+            if (count($viewsToInsert) > 0) {
+                foreach (array_chunk($viewsToInsert, 100) as $chunk) {
+                    \App\Models\PostView::insert($chunk);
+                }
+            }
         }
     }
 
