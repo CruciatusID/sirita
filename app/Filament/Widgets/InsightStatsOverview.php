@@ -11,10 +11,13 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class InsightStatsOverview extends StatsOverviewWidget
 {
+    public ?string $month = null;
+    public ?string $year = null;
+
     protected function getStats(): array
     {
-        $month = request()->query('month', now()->format('m'));
-        $year = request()->query('year', now()->format('Y'));
+        $month = $this->month ?? request()->query('month', now()->format('m'));
+        $year = $this->year ?? request()->query('year', now()->format('Y'));
 
         $dateObj = \Carbon\Carbon::createFromDate((int) $year, (int) $month, 1);
         $periodLabel = $dateObj->translatedFormat('F Y');

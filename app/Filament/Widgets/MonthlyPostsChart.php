@@ -8,12 +8,15 @@ use Filament\Widgets\ChartWidget;
 
 class MonthlyPostsChart extends ChartWidget
 {
+    public ?string $month = null;
+    public ?string $year = null;
+
     protected ?string $heading = 'Tren Publikasi Berita (6 Bulan Terakhir)';
 
     protected function getData(): array
     {
-        $month = request()->query('month', now()->format('m'));
-        $year = request()->query('year', now()->format('Y'));
+        $month = $this->month ?? request()->query('month', now()->format('m'));
+        $year = $this->year ?? request()->query('year', now()->format('Y'));
 
         // Start from the selected month & year
         $startDate = Carbon::createFromDate((int) $year, (int) $month, 1);

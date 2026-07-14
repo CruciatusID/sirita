@@ -7,12 +7,15 @@ use Filament\Widgets\ChartWidget;
 
 class CategoryViewsChart extends ChartWidget
 {
+    public ?string $month = null;
+    public ?string $year = null;
+
     protected ?string $heading = 'Total Dibaca per Kategori (Bulan Ini)';
 
     protected function getData(): array
     {
-        $month = request()->query('month', now()->format('m'));
-        $year = request()->query('year', now()->format('Y'));
+        $month = $this->month ?? request()->query('month', now()->format('m'));
+        $year = $this->year ?? request()->query('year', now()->format('Y'));
 
         $data = PostView::query()
             ->whereYear('post_views.created_at', $year)

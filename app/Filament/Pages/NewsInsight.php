@@ -59,9 +59,18 @@ class NewsInsight extends Page
     protected function getHeaderWidgets(): array
     {
         return [
-            \App\Filament\Widgets\InsightStatsOverview::class,
-            \App\Filament\Widgets\MonthlyPostsChart::class,
-            \App\Filament\Widgets\CategoryViewsChart::class,
+            \App\Filament\Widgets\InsightStatsOverview::class => [
+                'month' => $this->month,
+                'year' => $this->year,
+            ],
+            \App\Filament\Widgets\MonthlyPostsChart::class => [
+                'month' => $this->month,
+                'year' => $this->year,
+            ],
+            \App\Filament\Widgets\CategoryViewsChart::class => [
+                'month' => $this->month,
+                'year' => $this->year,
+            ],
         ];
     }
 
