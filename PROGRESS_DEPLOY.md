@@ -246,3 +246,18 @@ public_html/sirita/public
 - **MySQL Full-Text Search:** Migrasi `2026_06_15_132100_add_fulltext_index_to_posts_table.php` dibuat untuk menambahkan indeks `FULLTEXT` pada tabel `posts` (kolom `title`, `excerpt`, `content`). Pencarian di `PortalController@search` dioptimalkan dengan `MATCH() AGAINST()`.
 - **RSS Feed:** Rute `/feed` ditambahkan ke `routes/web.php` dan di-render menggunakan XML view di `portal/feed.blade.php` tanpa dependensi eksternal.
 
+## Update 2026-07-14: Pencatatan Sumber Lalu Lintas (Referrer) & Dashboard Analitik
+
+### SQL Patch Hosting
+Karena hosting tidak memiliki akses terminal untuk menjalankan `php artisan migrate`, jalankan perintah SQL berikut di phpMyAdmin atau panel database hosting Anda:
+
+```sql
+-- 1. Tambah kolom referrer ke tabel post_views dan buat indeksnya
+ALTER TABLE `post_views` 
+ADD COLUMN `referrer` VARCHAR(255) NULL, 
+ADD INDEX `post_views_referrer_index` (`referrer`);
+
+-- 2. Daftarkan migrasi di tabel migrations agar Laravel mengenali berkas migrasi telah dijalankan
+INSERT INTO `migrations` (`migration`, `batch`) 
+SELECT '2026_07_14_134500_add_referrer_to_post_views_table', COALESCE(MAX(`batch`), 0) + 1 FROM `migrations`;
+```
