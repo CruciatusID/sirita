@@ -189,16 +189,31 @@
             }
         }
         @media print {
+            /* Reset Layout Utama agar tidak terjadi infinite looping halaman kosong */
+            html, 
+            body, 
+            .fi-layout, 
+            .fi-main, 
+            .fi-main-ctn, 
+            .fi-body,
+            main {
+                height: auto !important;
+                min-height: auto !important;
+                overflow: visible !important;
+                position: static !important;
+                display: block !important;
+            }
+
             /* Tampilkan header laporan resmi */
             .print-header {
                 display: block !important;
             }
             
-            /* Sembunyikan elemen navigasi Filament, breadcrumbs, tombol cetak, dan form filter */
+            /* Sembunyikan elemen navigasi Filament, breadcrumbs, header bawaan, dan form filter */
             .fi-sidebar,
             .fi-topbar,
             .fi-breadcrumbs,
-            .fi-header-actions,
+            .fi-header,
             .filter-container {
                 display: none !important;
             }

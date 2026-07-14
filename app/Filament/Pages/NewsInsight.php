@@ -23,14 +23,14 @@ class NewsInsight extends Page
 
     protected function getHeaderActions(): array
     {
+        $params = http_build_query(['month' => $this->month, 'year' => $this->year]);
+
         return [
             Action::make('print')
                 ->label('Cetak Laporan (PDF)')
                 ->icon('heroicon-o-printer')
                 ->color('warning')
-                ->extraAttributes([
-                    'onclick' => 'window.print(); return false;',
-                ]),
+                ->url(route('admin.insight.print') . '?' . $params, shouldOpenInNewTab: true),
         ];
     }
 
@@ -59,18 +59,17 @@ class NewsInsight extends Page
     protected function getHeaderWidgets(): array
     {
         return [
-            \App\Filament\Widgets\InsightStatsOverview::class => [
-                'month' => $this->month,
-                'year' => $this->year,
-            ],
-            \App\Filament\Widgets\MonthlyPostsChart::class => [
-                'month' => $this->month,
-                'year' => $this->year,
-            ],
-            \App\Filament\Widgets\CategoryViewsChart::class => [
-                'month' => $this->month,
-                'year' => $this->year,
-            ],
+            \App\Filament\Widgets\InsightStatsOverview::make(['month' => $this->month, 'year' => $this->year]),
+            \App\Filament\Widgets\MonthlyPostsChart::make(['month' => $this->month, 'year' => $this->year]),
+            \App\Filament\Widgets\CategoryViewsChart::make(['month' => $this->month, 'year' => $this->year]),
+        ];
+    }
+
+    public function getWidgetData(): array
+    {
+        return [
+            'month' => $this->month,
+            'year' => $this->year,
         ];
     }
 
