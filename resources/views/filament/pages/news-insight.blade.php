@@ -109,4 +109,66 @@
             </div>
         </x-filament::section>
     </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <!-- Tabel Sumber Lalu Lintas -->
+        <x-filament::section icon="heroicon-o-globe-alt" icon-color="info" heading="Sumber Lalu Lintas (Referrers)">
+            <div style="overflow-x: auto; width: 100%;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                    <thead>
+                        <tr style="color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
+                            <th style="padding: 12px 16px 12px 0; text-align: left; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Sumber</th>
+                            <th style="padding: 12px 0 12px 16px; text-align: right; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Views</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($referrers as $ref)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                <td style="padding: 16px 16px 16px 0; text-align: left; border-bottom: 1px solid rgba(156, 163, 175, 0.15); font-weight: 500;">
+                                    {{ $ref->referrer }}
+                                </td>
+                                <td style="padding: 16px 0 16px 16px; text-align: right; font-weight: 600; color: #3b82f6; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                    {{ number_format($ref->views_count) }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="2" style="padding: 24px 0; text-align: center; color: #9ca3af; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">Belum ada data rujukan lalu lintas pada periode ini.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </x-filament::section>
+
+        <!-- Tabel Browser Pengunjung -->
+        <x-filament::section icon="heroicon-o-computer-desktop" icon-color="primary" heading="Browser Pengunjung">
+            <div style="overflow-x: auto; width: 100%;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                    <thead>
+                        <tr style="color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
+                            <th style="padding: 12px 16px 12px 0; text-align: left; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Nama Browser</th>
+                            <th style="padding: 12px 0 12px 16px; text-align: right; border-bottom: 2px solid rgba(156, 163, 175, 0.3);">Penggunaan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($browsers as $browser)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                <td style="padding: 16px 16px 16px 0; text-align: left; border-bottom: 1px solid rgba(156, 163, 175, 0.15); font-weight: 500;">
+                                    {{ $browser->name }}
+                                </td>
+                                <td style="padding: 16px 0 16px 16px; text-align: right; font-weight: 600; color: #6366f1; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">
+                                    {{ number_format($browser->count) }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="2" style="padding: 24px 0; text-align: center; color: #9ca3af; border-bottom: 1px solid rgba(156, 163, 175, 0.15);">Belum ada data browser pada periode ini.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </x-filament::section>
+    </div>
 </x-filament-panels::page>

@@ -16,6 +16,9 @@ class InsightStatsOverview extends StatsOverviewWidget
         $month = request()->query('month', now()->format('m'));
         $year = request()->query('year', now()->format('Y'));
 
+        $dateObj = \Carbon\Carbon::createFromDate((int) $year, (int) $month, 1);
+        $periodLabel = $dateObj->translatedFormat('F Y');
+
         // 1. Total Views in Selected Month
         $monthlyViews = PostView::query()
             ->whereYear('created_at', $year)
@@ -36,15 +39,15 @@ class InsightStatsOverview extends StatsOverviewWidget
         $allTimeViews = PostView::query()->count();
 
         return [
-            Stat::make('Pembaca (Bulan Ini)', number_format($monthlyViews))
+            Stat::make("Pembaca ($periodLabel)", number_format($monthlyViews))
                 ->description('Total tayangan berita')
                 ->icon(Heroicon::OutlinedEye)
                 ->color('amber'),
-            Stat::make('Berita Terbit (Bulan Ini)', number_format($monthlyPosts))
+            Stat::make("Berita Terbit ($periodLabel)", number_format($monthlyPosts))
                 ->description('Jumlah berita dipublikasikan')
                 ->icon(Heroicon::OutlinedNewspaper)
                 ->color('success'),
-            Stat::make('Rata-rata Dibaca', number_format($avgViews, 1))
+            Stat::make("Rata-rata Dibaca ($periodLabel)", number_format($avgViews, 1))
                 ->description('Rasio tayangan per berita')
                 ->icon(Heroicon::OutlinedPresentationChartLine)
                 ->color('info'),

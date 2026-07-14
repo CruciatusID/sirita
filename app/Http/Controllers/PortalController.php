@@ -64,9 +64,19 @@ class PortalController extends Controller
 
         $post->increment('views');
 
+        $refererUrl = request()->headers->get('referer');
+        $referrerHost = null;
+        if ($refererUrl) {
+            $referrerHost = parse_url($refererUrl, PHP_URL_HOST);
+            if ($referrerHost) {
+                $referrerHost = preg_replace('/^www\./', '', $referrerHost);
+            }
+        }
+
         $post->viewsRelation()->create([
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
+            'referrer' => $referrerHost,
             'created_at' => now(),
         ]);
 

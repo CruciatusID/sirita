@@ -53,6 +53,63 @@ class NewsInsight extends Page
 
     public function getViewData(): array
     {
+        // Ambil data referrers terpopuler pada bulan & tahun terpilih
+        $referrers = \App\Models\PostView::query()
+            ->whereYear('created_at', $this->year)
+            ->whereMonth('created_at', $this->month)
+            ->selectRaw('referrer, count(id) as views_count')
+            ->groupBy('referrer')
+            ->orderByDesc('views_count')
+            ->limit(10)
+            ->get()
+            ->map(function ($item) {
+                $item->referrer = $item->referrer ?: 'Direct / Akses Langsung';
+                return $item;
+            });
+
+        // Olah data browser dari User Agent
+        $userAgents = \App\Models\PostView::query()
+            ->whereYear('created_at', $this->year)
+            ->whereMonth('created_at', $this->month)
+            ->select('user_agent')
+            ->get();
+
+        $browsersData = [
+            'Chrome' => 0,
+            'Safari' => 0,
+            'Firefox' => 0,
+            'Edge' => 0,
+            'Opera' => 0,
+            'Lainnya' => 0,
+        ];
+
+        foreach ($userAgents as $ua) {
+            $agent = $ua->user_agent;
+            if (empty($agent)) {
+                $browsersData['Lainnya']++;
+            } elseif (str_contains($agent, 'Edg')) {
+                $browsersData['Edge']++;
+            } elseif (str_contains($agent, 'Chrome')) {
+                $browsersData['Chrome']++;
+            } elseif (str_contains($agent, 'Safari')) {
+                $browsersData['Safari']++;
+            } elseif (str_contains($agent, 'Firefox')) {
+                $browsersData['Firefox']++;
+            } elseif (str_contains($agent, 'OPR') || str_contains($agent, 'Opera')) {
+                $browsersData['Opera']++;
+            } else {
+                $browsersData['Lainnya']++;
+            }
+        }
+
+        arsort($browsersData);
+        $browsers = [];
+        foreach ($browsersData as $name => $count) {
+            if ($count > 0) {
+                $browsers[] = (object) ['name' => $name, 'count' => $count];
+            }
+        }
+
         // 5 Popular Posts in the selected month & year
         $popularPosts = Post::query()
             ->withCount(['viewsRelation as monthly_views' => function ($query) {
@@ -86,6 +143,8 @@ class NewsInsight extends Page
         return [
             'popularPosts' => $popularPosts,
             'topContributors' => $topContributors,
+            'referrers' => $referrers,
+            'browsers' => $browsers,
         ];
     }
 }

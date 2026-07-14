@@ -18,6 +18,7 @@ class PostView extends Model
         'post_id',
         'ip_address',
         'user_agent',
+        'referrer',
         'created_at',
     ];
 
