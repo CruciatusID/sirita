@@ -114,12 +114,6 @@
             text-align: center;
             color: #94a3b8;
         }
-        .truncate {
-            max-width: 220px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
 
         @media print {
             body { padding: 0; }
@@ -170,7 +164,7 @@
                     @forelse ($popularPosts as $post)
                         <tr>
                             <td>
-                                <div class="truncate font-medium">{{ $post->title }}</div>
+                                <div class="font-medium">{{ $post->title }}</div>
                                 <div class="text-muted text-sm">Oleh: {{ $post->author->name ?? '-' }}</div>
                             </td>
                             <td class="text-muted">{{ $post->category->name ?? '-' }}</td>

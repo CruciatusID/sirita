@@ -282,6 +282,17 @@
                 padding: 8px 12px !important;
                 border-bottom: 1px solid #e2e8f0 !important;
             }
+
+            /* Hindari pemotongan teks judul saat dicetak */
+            td div[title] {
+                white-space: normal !important;
+                overflow: visible !important;
+                text-overflow: clip !important;
+                max-width: none !important;
+            }
+            td {
+                max-width: none !important;
+            }
             
             /* Paksa grafik Chart.js memiliki ukuran penuh */
             canvas {
