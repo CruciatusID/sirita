@@ -171,6 +171,7 @@ Langkah berikutnya yang masih perlu dirapikan:
 1. Rapikan desain frontend sesuai identitas Kemenag.
 2. Evaluasi ulang package `spatie/laravel-backup` jika hosting tidak menyediakan extension `zip`.
 3. Uji ulang penuh fitur admin dan portal di hosting production setelah upload zip terbaru.
+4. Tambahkan widget statistik "Pengunjung Unik" (Unique Visitors) berbasis distinct IP Address di halaman dashboard admin Filament / Insight & Analitik (rencana bulan depan).
 
 ## Progress 2026-05-05
 
